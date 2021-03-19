@@ -1,0 +1,22 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Models\Dummy;
+use Ulex\EpicRepositories\DummyType\DummyTypeRepository;
+use App\Repositories\Interfaces\DummyRepositoryInterface;
+
+class DummyClass extends DummyTypeRepository implements DummyClassInterface
+{
+    /** @var Dummy */
+    protected $model;
+
+    /**
+     * DummyRepository constructor.
+     * @param Dummy $model
+     */
+    public function __construct(Dummy $model)
+    {
+        $this->model = $model;
+    }
+}

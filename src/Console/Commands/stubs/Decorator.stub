@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Models\Dummy;
+use Illuminate\Contracts\Cache\Repository as Cache;
+use App\Repositories\Interfaces\DummyRepositoryInterface;
+use Ulex\EpicRepositories\Decorators\DummyTypeDecorator;
+use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
+
+class DummyCachingDecorator extends DummyTypeDecorator implements DummyRepositoryInterface, DecoratorInterface
+{
+    /**
+     * DummyDummyTypeDecorator constructor.
+     * @param DummyRepositoryInterface $repository
+     * @param Cache $cache
+     * @param Dummy $model
+     */
+    public function __construct(DummyRepositoryInterface $repository, Cache $cache, Dummy $model)
+    {
+        $this->repository = $repository;
+        $this->cache = $cache;
+        $this->model = $model;
+    }
+}

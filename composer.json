@@ -1,0 +1,30 @@
+{
+    "name": "ulex/epic-repositories",
+    "description": "EPIC Repositories - An epic Laravel package",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexandros Pilavakis",
+            "email": "alexpilavakis@hotmail.com"
+        }
+    ],
+    "require": {
+        "php" : "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ulex\\EpicRepositories\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ulex\\EpicRepositories\\RepositoriesServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "minimum-stability": "dev"
+}
