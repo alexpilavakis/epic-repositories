@@ -33,10 +33,9 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Namespaces of you Repositories sub folders
+    | Namespaces of your Repositories sub folders
     |--------------------------------------------------------------------------
     |
-    | NOTE: If these are modified then remember to change the Commands FOLDER constant as well.
     |
     */
 
