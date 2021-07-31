@@ -33,15 +33,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Namespaces of your Repositories sub folders
+    | Repositories and Decorators configuration
     |--------------------------------------------------------------------------
-    |
+    | Set the namespaces of your repositories sub folder.
+    | Set all available repositories and decorators.
+    | Set the base Repository that is used to access the database.
     |
     */
 
     'namespaces' => [
         'interfaces' => 'App\Repositories\Interfaces',
         'decorators' => 'App\Repositories\Decorators',
+        'repositories' => 'App\Repositories'
+    ],
+
+    /* Set the base repository */
+    'base' => 'eloquent',
+
+    'repositories' => [
+        'eloquent',
+        //'database',
+        'elastic',
     ],
 
     'decorators' => [
@@ -49,11 +61,38 @@ return [
         //'logging'
     ],
 
-    'repositories' => [
-        'eloquent' => 'App\Repositories\Eloquent',
-        'elastic' => 'App\Repositories\Elastic',
-        //...
+    /*
+    |--------------------------------------------------------------------------
+    | Repositories/Decorators/Models Binding
+    |--------------------------------------------------------------------------
+    |   Structure:
+    |
+    |   'custom_repository' => [
+    |       'decorators' => ['custom_decorator', 'custom_decorator_2'],
+    |       'models' => [
+    |           'User' => App\Models\User::class,
+    |           'Post' => App\Models\Post::class,
+    |           ...
+    |       ]
+    |   ],
+    |
+    */
+
+    'bindings' => [
+        'eloquent' => [
+            'decorators' => ['caching'],
+            'models' => [
+                'User' => App\Models\User::class
+            ]
+        ],
+        'elastic' => [
+            'decorators' => ['logging'],
+            'models' => [
+                //'User' => App\Models\User::class
+            ]
+        ],
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Models that need Repository Binding

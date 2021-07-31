@@ -79,9 +79,9 @@ class DecoratorMakeCommand extends GeneratorCommand
     /**
      * Set repository class name
      *
-     * @return  DecoratorMakeCommand
+     * @return  void
      */
-    private function setDecoratorClass()
+    private function setDecoratorClass(): void
     {
         $name = (trim($this->argument('name')));
 
@@ -89,8 +89,6 @@ class DecoratorMakeCommand extends GeneratorCommand
         $decoratorName = ucfirst($this->decoratorType);
         $this->decoratorClass = $name . "{$decoratorName}Decorator";
         $this->type = $this->decoratorType . $this->type;
-
-        return $this;
     }
 
     /**

@@ -72,9 +72,9 @@ class RepositoryMakeCommand extends GeneratorCommand
     /**
      * Set repository class name
      *
-     * @return  RepositoryMakeCommand
+     * @return  void
      */
-    private function setRepositoryClass()
+    private function setRepositoryClass(): void
     {
         $model = (trim($this->argument('model')));
 
@@ -82,8 +82,6 @@ class RepositoryMakeCommand extends GeneratorCommand
 
         $this->repositoryClass = $model . 'Repository';
         $this->type = $this->repositoryType . $this->type;
-
-        return $this;
     }
 
     /**

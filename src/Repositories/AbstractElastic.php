@@ -1,18 +1,27 @@
 <?php
 
-namespace Ulex\EpicRepositories\Eloquent;
+namespace Ulex\EpicRepositories\Repositories;
 
-use Ulex\EpicRepositories\Interfaces\CachingDecoratorInterface;
+use Ulex\ElasticsearchDevTools\ElasticDevTools;
+use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
 use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-abstract class EloquentRepository implements RepositoryInterface, CachingDecoratorInterface
+abstract class AbstractElastic implements RepositoryInterface, DecoratorInterface
 {
-    /**
-     * @var
-     */
+    /** @var */
     protected $model;
+
+    protected $devTools;
+
+    /**
+     * ElasticRepository constructor.
+     */
+    public function __construct()
+    {
+        $this->devTools = new ElasticDevTools();
+    }
 
     /**
      * @param $name
@@ -24,30 +33,24 @@ abstract class EloquentRepository implements RepositoryInterface, CachingDecorat
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getAll()
+    public function getName()
     {
-        return $this->model->all();
+        return 'elastic';
     }
+
+    /** TODO Implement these with Elasticsearch package */
+
+    /** ################################################ Single ################################################ */
 
     /**
      * @param $id
      * @return mixed
      */
-    public function getById($id)
+    public function find($id)
     {
         return $this->model->find($id);
-    }
-
-    /**
-     * @param $attribute
-     * @param $value
-     * @return mixed
-     */
-    public function getBy($attribute, $value)
-    {
-        return $this->model->where($attribute, '=', $value)->first();
     }
 
     /**
@@ -58,6 +61,37 @@ abstract class EloquentRepository implements RepositoryInterface, CachingDecorat
     {
         return $this->model->findOrFail($id);
     }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function findBy($attribute, $value)
+    {
+        return $this->model->where($attribute, '=', $value)->first();
+    }
+
+    /** ################################################ Get Collection ################################################ */
+
+    /**
+     * @return mixed
+     */
+    public function all()
+    {
+        return $this->model->all();
+    }
+
+    /**
+     * @param array $conditions
+     * @return mixed
+     */
+    public function findByConditions(array $conditions)
+    {
+        return $this->model->where($conditions)->first();
+    }
+
+    /** ################################################ Modify ################################################ */
 
     /**
      * @param $attributes
@@ -127,7 +161,7 @@ abstract class EloquentRepository implements RepositoryInterface, CachingDecorat
      * @param array $attributes
      * @return bool|int
      */
-    public function updateWithConditions(array $conditions, array $attributes)
+    public function updateByConditions(array $conditions, array $attributes)
     {
         return $this->model->where($conditions)->update($attributes);
     }
@@ -141,18 +175,23 @@ abstract class EloquentRepository implements RepositoryInterface, CachingDecorat
     }
 
     /**
-     * Example:
-     * $attributes = [
-     *      'value_1'
-     *      'value_2'
-     *      ...
-     *  ];
-     * @param string $column
-     * @param array $emails
+     * @param array $conditions
      */
-    public function deleteManyBy(string $column, array $emails)
+    public function deleteByConditions(array $conditions)
     {
-        $this->model->query()->whereIn($column, $emails)->delete();
+    }
+
+    /**
+     * @param $date
+     *
+     * @return Closure
+     */
+    protected function mapValues($date)
+    {
+        return function ($item) use ($date) {
+            $item['created_at'] = $item['updated_at'] = $date;
+            return $item;
+        };
     }
 
     /**
@@ -171,19 +210,5 @@ abstract class EloquentRepository implements RepositoryInterface, CachingDecorat
             return new $class($this->model);
         }
         return null;
-    }
-
-    /**
-     * @param $attribute
-     * @param $date
-     *
-     * @return Closure
-     */
-    protected function mapValues($date)
-    {
-        return function ($item) use ($date) {
-            $item['created_at'] = $item['updated_at'] = $date;
-            return $item;
-        };
     }
 }

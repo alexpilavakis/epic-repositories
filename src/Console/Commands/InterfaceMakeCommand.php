@@ -54,15 +54,13 @@ class InterfaceMakeCommand extends GeneratorCommand
 
     /**
      * Set interface class name
-     * @return InterfaceMakeCommand
+     * @return void
      */
-    private function setInterfaceClass()
+    private function setInterfaceClass(): void
     {
         $name = (trim($this->argument('name')));
 
         $this->interfaceClass = $name . 'RepositoryInterface';
-
-        return $this;
     }
 
     /**
