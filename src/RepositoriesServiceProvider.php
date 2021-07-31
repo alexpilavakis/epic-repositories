@@ -41,10 +41,11 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
             $folder = ucfirst($index);
             $repositoryName = $folder . "Repository";
             foreach ($configuration['models'] as $model => $class) {
+                $model = ucfirst($model);
                 $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $repositoryName;
                 $interface = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
                 foreach ($configuration['decorators'] as $decoratorName) {
-                    $decorator = $namespaces['decorators'] . "\\" . $model . ucfirst($decoratorName) . "Decorator";
+                    $decorator = $namespaces['decorators'] . "\\" . $model . $folder . ucfirst($decoratorName) . "Decorator";
                     $this->app->bind($interface, function () use ($class, $decorator, $repository) {
                         $model = new $class();
                         $baseRepo = new $repository($model);
