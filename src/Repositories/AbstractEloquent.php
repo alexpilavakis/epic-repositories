@@ -1,56 +1,31 @@
 <?php
 
-namespace Ulex\EpicRepositories\Elastic;
+namespace Ulex\EpicRepositories\Repositories;
 
-use Ulex\EpicRepositories\Interfaces\CachingDecoratorInterface;
+use Closure;
 use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-abstract class ElasticRepository implements RepositoryInterface, CachingDecoratorInterface
+abstract class AbstractEloquent implements RepositoryInterface
 {
-    /**
-     * @var
-     */
+    /** @var */
     protected $model;
 
     /**
-     * @param $name
-     * @return $this|null
+     ************
+     * Find *****
+     ** Single **
+     ************
      */
-    public function useRepository($name)
-    {
-        return $this;
-    }
-
-    /** TODO Implement these with Elasticsearch package */
-
-
-    /**
-     * @return mixed
-     */
-    public function getAll()
-    {
-        return $this->model->all();
-    }
 
     /**
      * @param $id
      * @return mixed
      */
-    public function getById($id)
+    public function find($id)
     {
         return $this->model->find($id);
-    }
-
-    /**
-     * @param $attribute
-     * @param $value
-     * @return mixed
-     */
-    public function getBy($attribute, $value)
-    {
-        return $this->model->where($attribute, '=', $value)->first();
     }
 
     /**
@@ -61,6 +36,58 @@ abstract class ElasticRepository implements RepositoryInterface, CachingDecorato
     {
         return $this->model->findOrFail($id);
     }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function findBy($attribute, $value)
+    {
+        return $this->model->where($attribute, '=', $value)->first();
+    }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return mixed
+     */
+    public function checkIfExists($attribute, $value)
+    {
+        return $this->model->where($attribute, '=', $value)->exists();
+    }
+
+    /**
+     **********
+     * Find ***
+     ** Many **
+     **********
+     */
+
+    /**
+     * @return mixed
+     */
+    public function all()
+    {
+        return $this->model->all();
+    }
+
+    /**
+     * @param array $conditions
+     * @return mixed
+     */
+    public function findByConditions(array $conditions)
+    {
+        return $this->model->where($conditions)->get();
+    }
+
+    /**
+     *************
+     * Create ****
+     ** Update ***
+     *** Delete **
+     *************
+     */
 
     /**
      * @param $attributes
@@ -103,7 +130,7 @@ abstract class ElasticRepository implements RepositoryInterface, CachingDecorato
      */
     public function firstOrCreate($attributes)
     {
-        return $this->model::firstOrCreate($attributes);
+        return $this->model->firstOrCreate($attributes);
     }
 
     /**
@@ -112,7 +139,7 @@ abstract class ElasticRepository implements RepositoryInterface, CachingDecorato
      */
     public function updateOrCreate($attributes)
     {
-        return $this->model::updateOrCreate($attributes);
+        return $this->model->updateOrCreate($attributes);
     }
 
     /**
@@ -130,7 +157,7 @@ abstract class ElasticRepository implements RepositoryInterface, CachingDecorato
      * @param array $attributes
      * @return bool|int
      */
-    public function updateWithConditions(array $conditions, array $attributes)
+    public function updateByConditions(array $conditions, array $attributes)
     {
         return $this->model->where($conditions)->update($attributes);
     }
@@ -144,40 +171,13 @@ abstract class ElasticRepository implements RepositoryInterface, CachingDecorato
     }
 
     /**
-     * Example:
-     * $attributes = [
-     *      'value_1'
-     *      'value_2'
-     *      ...
-     *  ];
-     * @param string $column
-     * @param array $emails
+     * @param array $conditions
      */
-    public function deleteManyBy(string $column, array $emails)
+    public function deleteByConditions(array $conditions)
     {
-        $this->model->query()->whereIn($column, $emails)->delete();
     }
 
     /**
-     * @param $name
-     * @return $this|null
-     */
-    public function withDecorator($name)
-    {
-        $decorators = app()->config['epic-repositories.decorators'];
-        $namespace = $decorators[$name];
-        if (is_null($namespace)) {
-            return null;
-        }
-        $class = $namespace . "\\" . $this->tag() . "CachingDecorator";
-        if(class_exists($class)) {
-            return new $class($this->model);
-        }
-        return null;
-    }
-
-    /**
-     * @param $attribute
      * @param $date
      *
      * @return Closure

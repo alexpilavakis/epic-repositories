@@ -94,8 +94,8 @@ public function __construct(UserRepositoryInterface $userRepository)
 /** @var User $user */
 $user = $this->userRepository->getBy('name', $userName);
 
-$allFromElastic = $this->userRepository->useRepository('elastic')->getAll();
-$allFromEloquent = $this->userRepository->getAll();
+$allFromElastic = $this->userRepository->useRepository('elastic')->all();
+$allFromEloquent = $this->userRepository->all();
 ```
 
 ## Contributing

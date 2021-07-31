@@ -35,21 +35,22 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
      */
     public function register()
     {
-        $models = $this->app->config['epic-repositories.models'];
         $namespaces = $this->app->config['epic-repositories.namespaces'];
-        $repositories = $this->app->config['epic-repositories.repositories'];
-        $repositoryNamespace = reset($repositories);
-        $decorators = $this->app->config['epic-repositories.decorators'];
-        foreach ($models as $name => $class) {
-            $interface = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
-            $repository = $repositoryNamespace . "\\" . $name . "Repository";
-            foreach ($decorators as $decorator) {
-                $decorator = $namespaces['decorators'] . "\\" . $name . ucfirst($decorator) . "Decorator";
-                $this->app->bind($interface, function () use ($name, $class, $decorator, $repository) {
-                    $model = new $class();
-                    $baseRepo = new $repository($model);
-                    return new $decorator($baseRepo, $this->app['cache.store'], $model);
+        $bindings = $this->app->config['epic-repositories.bindings'];
+        foreach ($bindings as $index => $configuration) {
+            $folder = ucfirst($index);
+            $repositoryName = $folder . "Repository";
+            foreach ($configuration['models'] as $model => $class) {
+                $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $repositoryName;
+                $interface = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+                foreach ($configuration['decorators'] as $decoratorName) {
+                    $decorator = $namespaces['decorators'] . "\\" . $model . ucfirst($decoratorName) . "Decorator";
+                    $this->app->bind($interface, function () use ($class, $decorator, $repository) {
+                        $model = new $class();
+                        $baseRepo = new $repository($model);
+                        return new $decorator($baseRepo, $this->app['cache.store'], $model);
                 });
+                }
             }
         }
     }
@@ -62,10 +63,14 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
     public function provides(): array
     {
         $provides = [];
-        $models = $this->app->config['epic-repositories.models'];
         $namespaces = $this->app->config['epic-repositories.namespaces'];
-        foreach ($models as $name => $class) {
-            $provides[] = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
+        $bindings = $this->app->config['epic-repositories.bindings'];
+        foreach ($bindings as $index => $configuration) {
+            $folder = ucfirst($index);
+            $repositoryName = $folder . "Repository";
+            foreach ($configuration['models'] as $model => $class) {
+                $provides[] = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+            }
         }
         return $provides;
     }
