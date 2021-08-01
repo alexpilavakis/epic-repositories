@@ -99,7 +99,7 @@ class EpicMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/EpicRepository.stub';
+        return __DIR__.'/stubs/Repository.stub';
     }
 
     /**
