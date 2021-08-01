@@ -13,7 +13,7 @@ class InterfaceMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'make:epic:interface {name : The required model name of the repository interface}';
+    protected $signature = 'make:epic:interface {name : The required model name of the repository interface} {repository : The required name of the repository}';
 
     /**
      * The console command description.
@@ -59,8 +59,9 @@ class InterfaceMakeCommand extends GeneratorCommand
     private function setInterfaceClass(): void
     {
         $name = (trim($this->argument('name')));
+        $repository = (trim($this->argument('repository')));
 
-        $this->interfaceClass = $name . 'RepositoryInterface';
+        $this->interfaceClass = $name . $repository . 'EpicInterface';
     }
 
     /**

@@ -47,18 +47,15 @@ return [
         'repositories' => 'App\Repositories'
     ],
 
-    /* Set the base repository */
-    'base' => 'eloquent',
-
     'repositories' => [
         'eloquent',
         //'database',
-        'elastic',
+        //'elastic',
     ],
 
     'decorators' => [
         'caching',
-        //'logging'
+        'logging'
     ],
 
     /*
@@ -85,12 +82,12 @@ return [
                 'User' => App\Models\User::class
             ]
         ],
-        'elastic' => [
+        /*'elastic' => [
             'decorators' => ['logging'],
             'models' => [
-                //'User' => App\Models\User::class
+                'User' => App\Models\User::class
             ]
-        ],
+        ],*/
     ],
 
     'configs' => [

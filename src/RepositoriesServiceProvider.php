@@ -5,8 +5,8 @@ namespace Ulex\EpicRepositories;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Ulex\EpicRepositories\Console\Commands\DecoratorMakeCommand;
+use Ulex\EpicRepositories\Console\Commands\EpicMakeCommand;
 use Ulex\EpicRepositories\Console\Commands\InterfaceMakeCommand;
-use Ulex\EpicRepositories\Console\Commands\RepositoryMakeCommand;
 
 class RepositoriesServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -21,9 +21,9 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
         }
         if ($this->app->runningInConsole()) {
             $this->commands([
-                RepositoryMakeCommand::class,
                 InterfaceMakeCommand::class,
                 DecoratorMakeCommand::class,
+                EpicMakeCommand::class
             ]);
         }
     }
@@ -39,11 +39,10 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
         $bindings = $this->app->config['epic-repositories.bindings'];
         foreach ($bindings as $index => $configuration) {
             $folder = ucfirst($index);
-            $repositoryName = $folder . "Repository";
             foreach ($configuration['models'] as $model => $class) {
                 $model = ucfirst($model);
-                $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $repositoryName;
-                $interface = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+                $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $folder . "Repository";
+                $interface = $namespaces['interfaces'] . "\\" . $model . $folder . "Interface";
                 $epic = new $repository($class);
                 foreach ($configuration['decorators'] as $decoratorName) {
                     $decorator = $namespaces['decorators'] . "\\" . $model . $folder . ucfirst($decoratorName) . "Decorator";
