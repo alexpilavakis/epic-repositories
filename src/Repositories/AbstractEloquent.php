@@ -3,12 +3,11 @@
 namespace Ulex\EpicRepositories\Repositories;
 
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
-use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Closure;
 
-abstract class AbstractEloquent implements RepositoryInterface
+abstract class AbstractEloquent implements EpicInterface
 {
     /** @var */
     protected $model;

@@ -4,13 +4,11 @@ namespace Ulex\EpicRepositories\Repositories;
 
 use Ulex\EpicRepositories\Helpers\Elastic\Hit;
 use Ulex\EpicRepositories\Helpers\Elastic\Result;
-use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
-use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
 
-abstract class AbstractElastic implements RepositoryInterface, DecoratorInterface
+abstract class AbstractElastic implements EpicInterface
 {
     /** @var string */
     protected $model;

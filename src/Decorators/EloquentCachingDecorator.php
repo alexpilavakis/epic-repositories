@@ -2,24 +2,14 @@
 
 namespace Ulex\EpicRepositories\Decorators;
 
-use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Closure;
 
-abstract class EloquentCachingDecorator implements DecoratorInterface
+abstract class EloquentCachingDecorator extends AbstractDecorator
 {
-    /** @var EpicInterface */
-    public $epic;
-
     /** @var Cache */
     protected $cache;
-
-    /** @var string */
-    protected $model;
-
-    /** @var string */
-    protected $name;
 
     /** @var int */
     protected $ttl;
@@ -36,10 +26,8 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function __construct($model, EpicInterface $epic = null)
     {
-        $this->epic = $epic;
+        parent::__construct($model, $epic);
         $this->cache = app('cache.store');
-        $this->model = $model;
-        $this->name = strtolower(class_basename($model));
         $this->ttl = $this->ttl();
     }
 

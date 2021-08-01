@@ -2,13 +2,15 @@
 
 namespace Ulex\EpicRepositories\Repositories;
 
-use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
-use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 
-abstract class AbstractDatabase implements RepositoryInterface, DecoratorInterface
+abstract class AbstractDatabase implements EpicInterface
 {
-    public function __construct(string $model, EpicInterface $epic = null)
+    /**
+     * @param $model
+     * @param EpicInterface|null $epic
+     */
+    public function __construct($model, EpicInterface $epic = null)
     {
 
     }
