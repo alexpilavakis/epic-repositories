@@ -2,7 +2,7 @@
 
 namespace Ulex\EpicRepositories\Interfaces;
 
-interface RepositoryInterface
+interface RepositoryInterface extends EpicInterface
 {
 
 }

@@ -2,7 +2,7 @@
 
 namespace Ulex\EpicRepositories\Interfaces;
 
-interface DecoratorInterface
+interface DecoratorInterface extends EpicInterface
 {
 
 }
