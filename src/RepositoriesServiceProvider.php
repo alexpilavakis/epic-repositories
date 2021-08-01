@@ -42,10 +42,16 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
             foreach ($configuration['models'] as $model => $class) {
                 $model = ucfirst($model);
                 $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $folder . "Repository";
+                if ($this->app->runningInConsole() && !class_exists($repository)) {
+                    continue;
+                }
                 $interface = $namespaces['interfaces'] . "\\" . $model . $folder . "Interface";
                 $epic = new $repository($class);
                 foreach ($configuration['decorators'] as $decoratorName) {
                     $decorator = $namespaces['decorators'] . "\\" . $model . $folder . ucfirst($decoratorName) . "Decorator";
+                    if ($this->app->runningInConsole() && !class_exists($decorator)) {
+                        continue;
+                    }
                     $epic = new $decorator($class, $epic);
                 }
                 $this->app->singleton($interface,
