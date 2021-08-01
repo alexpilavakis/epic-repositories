@@ -2,15 +2,29 @@
 
 namespace Ulex\EpicRepositories\Repositories;
 
-use Closure;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Closure;
 
 abstract class AbstractEloquent implements RepositoryInterface
 {
     /** @var */
     protected $model;
+
+    /** @var */
+    protected $epic;
+
+
+    /**
+     * @param $model
+     * @param EpicInterface|null $epic
+     */
+    public function __construct($model, EpicInterface $epic = null)
+    {
+        $this->model = new $model();
+    }
 
     /**
      ************

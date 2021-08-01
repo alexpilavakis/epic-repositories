@@ -3,18 +3,29 @@
 namespace Ulex\EpicRepositories\Decorators;
 
 use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
-use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
-use Illuminate\Contracts\Cache\Repository as Cache;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
 abstract class LoggingDecorator implements DecoratorInterface
 {
-    /** @var RepositoryInterface */
-    protected $repository;
+    /** @var EpicInterface */
+    protected $epic;
 
-    /** @var Cache */
-    protected $cache;
-
-    /** @var */
+    /** @var string */
     protected $model;
+
+    /** @var string */
+    protected $name;
+
+    /**
+     * LoggingCachingDecorator constructor.
+     * @param $model
+     * @param EpicInterface|null $epic
+     */
+    public function __construct($model, EpicInterface $epic = null)
+    {
+        $this->epic = $epic;
+        $this->model = $model;
+        $this->name = strtolower(class_basename($model));
+    }
 
 }

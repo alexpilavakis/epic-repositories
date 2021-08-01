@@ -44,15 +44,20 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
                 $model = ucfirst($model);
                 $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $repositoryName;
                 $interface = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+                $epic = new $repository($class);
                 foreach ($configuration['decorators'] as $decoratorName) {
                     $decorator = $namespaces['decorators'] . "\\" . $model . $folder . ucfirst($decoratorName) . "Decorator";
-                    $this->app->bind($interface, function () use ($class, $decorator, $repository) {
-                        $model = new $class();
-                        $baseRepo = new $repository($model);
-                        return new $decorator($baseRepo, $this->app['cache.store'], $model);
-                });
+                    $epic = new $decorator($class, $epic);
                 }
+                $this->app->singleton($interface,
+                    empty($decorator) ? function () use ($epic) {
+                        return $epic;
+                    } : function () use ($decorator, $class, $epic) {
+                        return new $decorator($class, $epic);
+                    }
+                );
             }
+            $decorator = null;
         }
     }
 
@@ -70,6 +75,7 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
             $folder = ucfirst($index);
             $repositoryName = $folder . "Repository";
             foreach ($configuration['models'] as $model => $class) {
+                $model = ucfirst($model);
                 $provides[] = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
             }
         }

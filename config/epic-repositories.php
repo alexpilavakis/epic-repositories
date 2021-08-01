@@ -93,15 +93,21 @@ return [
         ],
     ],
 
+    'configs' => [
     /*
     |--------------------------------------------------------------------------
-    | Models that need Repository Binding
+    | Custom Elasticsearch Client Configuration
     |--------------------------------------------------------------------------
     |
+    | This array will be passed to the Elasticsearch client.
+    | See configuration options here:
     |
+    | https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/configuration.html
     */
-
-    'models' => [
-        //'User' => App\Models\User::class
+        'elastic' => [
+            'hosts' => explode(',', env('ELASTICSEARCH_HOSTS', 'localhost:9200')),
+            'retries' => 3,
+        ],
+        //...
     ]
 ];

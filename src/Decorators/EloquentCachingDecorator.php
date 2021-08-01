@@ -3,20 +3,26 @@
 namespace Ulex\EpicRepositories\Decorators;
 
 use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
-use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Closure;
 
 abstract class EloquentCachingDecorator implements DecoratorInterface
 {
-    /** @var RepositoryInterface */
-    public $repository;
+    /** @var EpicInterface */
+    public $epic;
 
     /** @var Cache */
     protected $cache;
 
-    /** @var */
+    /** @var string */
     protected $model;
+
+    /** @var string */
+    protected $name;
+
+    /** @var int */
+    protected $ttl;
 
     /** @var bool */
     protected $cacheForever = false;
@@ -24,28 +30,42 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
     const CACHE_TAG_COLLECTION = 'collection';
 
     /**
+     * EloquentCachingDecorator constructor.
+     * @param $model
+     * @param EpicInterface|null $epic
+     */
+    public function __construct($model, EpicInterface $epic = null)
+    {
+        $this->epic = $epic;
+        $this->cache = app('cache.store');
+        $this->model = $model;
+        $this->name = strtolower(class_basename($model));
+        $this->ttl = $this->ttl();
+    }
+
+    /**
      ********************
-     * Caching, *********
-     ** Flushing & ******
-     *** Configurations *
+     * Configurations ***
+     ** Caching & *******
+     *** Flushing * *****
      ********************
      */
 
     /**
-     * @return string
+     * @return EpicInterface
      */
-    private function basename()
+    protected function getEpic()
     {
-        return strtolower(class_basename($this->model));
+        return $this->epic;
     }
 
     /**
      * @return int
      */
-    protected function ttl(): int
+    private function ttl(): int
     {
         $ttl = app()->config['epic-repositories.ttl'];
-        return $ttl[$this->basename()] ?? $ttl['default'];
+        return $ttl[$this->name] ?? $ttl['default'];
     }
 
     /**
@@ -54,7 +74,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     protected function tag(): array
     {
-        return [$this->basename()];
+        return [$this->name];
     }
 
     /**
@@ -179,7 +199,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
         if ($this->cacheForever) {
             return $this->cache->tags($tags)->rememberForever($key, $closure);
         }
-        return $this->cache->tags($tags)->remember($key, $this->ttl(), $closure);
+        return $this->cache->tags($tags)->remember($key, $this->ttl, $closure);
     }
 
     /**
@@ -189,18 +209,10 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     private function closure($function, $arguments)
     {
-        $repository = $this->getRepository();
+        $repository = $this->getEpic();
         return function () use ($function, $arguments, $repository) {
             return $repository->$function(...$arguments);
         };
-    }
-
-    /**
-     * @return RepositoryInterface
-     */
-    protected function getRepository()
-    {
-        return $this->repository;
     }
 
     /**
@@ -286,7 +298,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function create($attributes)
     {
-        $model = $this->getRepository()->create($attributes);
+        $model = $this->getEpic()->create($attributes);
         $this->flushGetKeys($model);
         return $model;
     }
@@ -306,7 +318,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function firstOrCreate($attributes)
     {
-        $model = $this->getRepository()->firstOrCreate($attributes);
+        $model = $this->getEpic()->firstOrCreate($attributes);
         $this->flushGetKeys($model);
         return $model;
     }
@@ -317,7 +329,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function updateOrCreate($attributes)
     {
-        $model =  $this->getRepository()->updateOrCreate($attributes);
+        $model = $this->getEpic()->updateOrCreate($attributes);
         $this->flushGetKeys($model);
         return $model;
     }
@@ -329,7 +341,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function update($model, $attributes)
     {
-        $repository = $this->getRepository();
+        $repository = $this->getEpic();
         $result = $repository->update($model, $attributes);
         if ($result) {
             $this->flushGetKeys($model);
@@ -344,7 +356,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function updateByConditions(array $conditions, array $attributes)
     {
-        $result = $this->getRepository()->updateByConditions($conditions, $attributes);
+        $result = $this->getEpic()->updateByConditions($conditions, $attributes);
         if ($result) {
             $models = $this->findByConditions($conditions);
             foreach ($models as $model) {
@@ -360,7 +372,7 @@ abstract class EloquentCachingDecorator implements DecoratorInterface
      */
     public function delete($model)
     {
-        $result = $this->getRepository()->delete($model);
+        $result = $this->getEpic()->delete($model);
         if ($result) {
             $this->flushGetKeys($model);
         }

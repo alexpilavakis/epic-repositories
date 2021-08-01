@@ -2,213 +2,105 @@
 
 namespace Ulex\EpicRepositories\Repositories;
 
-use Ulex\ElasticsearchDevTools\ElasticDevTools;
+use Ulex\EpicRepositories\Helpers\Elastic\Hit;
+use Ulex\EpicRepositories\Helpers\Elastic\Result;
 use Ulex\EpicRepositories\Interfaces\DecoratorInterface;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Elasticsearch\ClientBuilder;
+use Elasticsearch\Client;
 
 abstract class AbstractElastic implements RepositoryInterface, DecoratorInterface
 {
-    /** @var */
+    /** @var string */
     protected $model;
 
-    protected $devTools;
+    /** @var string */
+    protected $index;
+
+    /** @var Client */
+    public $client;
 
     /**
-     * ElasticRepository constructor.
-     */
-    public function __construct()
-    {
-        $this->devTools = new ElasticDevTools();
-    }
-
-    /**
-     * @param $name
-     * @return $this|null
-     */
-    public function useRepository($name)
-    {
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'elastic';
-    }
-
-    /** TODO Implement these with Elasticsearch package */
-
-    /** ################################################ Single ################################################ */
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function find($id)
-    {
-        return $this->model->find($id);
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function findOrFail($id)
-    {
-        return $this->model->findOrFail($id);
-    }
-
-    /**
-     * @param $attribute
-     * @param $value
-     * @return mixed
-     */
-    public function findBy($attribute, $value)
-    {
-        return $this->model->where($attribute, '=', $value)->first();
-    }
-
-    /** ################################################ Get Collection ################################################ */
-
-    /**
-     * @return mixed
-     */
-    public function all()
-    {
-        return $this->model->all();
-    }
-
-    /**
-     * @param array $conditions
-     * @return mixed
-     */
-    public function findByConditions(array $conditions)
-    {
-        return $this->model->where($conditions)->first();
-    }
-
-    /** ################################################ Modify ################################################ */
-
-    /**
-     * @param $attributes
-     * @return mixed
-     */
-    public function create($attributes)
-    {
-        return $this->model::create($attributes);
-    }
-
-    /**
-     * Example:
-     * $attributes = [
-     *      [
-     *          'attribute_1' => 'some_value',
-     *          'attribute_2' => 'some_value',
-     *          ...
-     *      ],
-     *      [
-     *          'attribute_1' => 'some_value',
-     *          'attribute_2' => 'some_value',
-     *      ],
-     *      ...
-     * ];
-     *
-     * @param array $attributes
-     */
-    public function createMany(array $attributes)
-    {
-        if ($this->model->timestamps) {
-            $date = Carbon::now();
-            $attributes = array_map($this->mapValues($date), $attributes);
-        }
-        DB::table($this->model->getTable())->insertOrIgnore($attributes);
-    }
-
-    /**
-     * @param $attributes
-     * @return mixed
-     */
-    public function firstOrCreate($attributes)
-    {
-        return $this->model->firstOrCreate($attributes);
-    }
-
-    /**
-     * @param $attributes
-     * @return mixed
-     */
-    public function updateOrCreate($attributes)
-    {
-        return $this->model->updateOrCreate($attributes);
-    }
-
-    /**
+     * AbstractElastic constructor.
      * @param $model
-     * @param $attributes
-     * @return mixed
+     * @param EpicInterface|null $epic
+     * @return Client
      */
-    public function update($model, $attributes)
+    public function __construct($model, EpicInterface $epic = null)
     {
-        return $model->update($attributes);
-    }
-
-    /**
-     * @param array $conditions
-     * @param array $attributes
-     * @return bool|int
-     */
-    public function updateByConditions(array $conditions, array $attributes)
-    {
-        return $this->model->where($conditions)->update($attributes);
-    }
-
-    /**
-     * @param $model
-     */
-    public function delete($model)
-    {
-        $model->delete();
-    }
-
-    /**
-     * @param array $conditions
-     */
-    public function deleteByConditions(array $conditions)
-    {
-    }
-
-    /**
-     * @param $date
-     *
-     * @return Closure
-     */
-    protected function mapValues($date)
-    {
-        return function ($item) use ($date) {
-            $item['created_at'] = $item['updated_at'] = $date;
-            return $item;
-        };
-    }
-
-    /**
-     * @param $name
-     * @return $this|null
-     */
-    public function withDecorator($name)
-    {
-        $decorators = app()->config['epic-repositories.decorators'];
-        $namespace = $decorators[$name];
-        if (is_null($namespace)) {
-            return null;
+        $this->index = $this->index ?? strtolower(class_basename($model) . 's');
+        $configs = config('epic-repositories.configs.elastic');
+        $hosts = $configs['hosts'] ?? null;
+        $clientBuilder = ClientBuilder::create()->setHosts($hosts);
+        if (isset($config['retries'])) {
+            $clientBuilder->setRetries($config['retries']);
         }
-        $class = $namespace . "\\" . $this->tag() . ucfirst($name) . "Decorator";
-        if(class_exists($class)) {
-            return new $class($this->model);
-        }
-        return null;
+        $this->client = $clientBuilder->build();
+        return $this->client;
+    }
+
+    /**
+     * @param $result
+     * @return Result
+     */
+    protected function processResult($params)
+    {
+        $result = new Result();
+        $result->setTotal($params['hits']['total']['value'] ?? null);
+
+        $hits = isset($params['hits']['hits']) ? array_column($params['hits']['hits'], '_source') : null;
+        $result->setHits($hits);
+        return $result;
+    }
+
+    /**
+     * @param $hit
+     * @return Hit
+     */
+    protected function extractHit($result)
+    {
+        $hit = new Hit();
+        $hit->setIndex($result['_index'] ?? '');
+        $hit->setId($result['_id'] ?? '');
+        $hit->setSource($result['_source'] ?? []);
+        return $hit;
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function setParams(array $params)
+    {
+        $params['index'] = $params['index'] ?? $this->index;
+        $params['type'] = $params['type'] ?? null;
+        return $params;
+    }
+
+    /**
+     ************
+     * Search ***
+     ************
+     */
+
+    /**
+     * @param array $params
+     * @return Hit
+     */
+    public function get(array $params)
+    {
+        $result = $this->client->get($this->setParams($params));
+        return $this->extractHit($result);
+    }
+
+    /**
+     * @param $params
+     * @return Result
+     */
+    public function search($params)
+    {
+        $result = $this->client->search($this->setParams($params));
+        return $this->processResult($result);
     }
 }
