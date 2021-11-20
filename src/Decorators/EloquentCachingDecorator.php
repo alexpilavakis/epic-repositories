@@ -2,6 +2,7 @@
 
 namespace Ulex\EpicRepositories\Decorators;
 
+use ReflectionException;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Closure;
@@ -23,6 +24,7 @@ abstract class EloquentCachingDecorator extends AbstractDecorator
      * EloquentCachingDecorator constructor.
      * @param $model
      * @param EpicInterface|null $epic
+     * @throws ReflectionException
      */
     public function __construct($model, EpicInterface $epic = null)
     {
