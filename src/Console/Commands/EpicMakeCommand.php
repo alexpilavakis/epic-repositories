@@ -4,17 +4,16 @@ namespace Ulex\EpicRepositories\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 
-class RepositoryMakeCommand extends GeneratorCommand
+class EpicMakeCommand extends GeneratorCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'make:epic:repository {model : The required model of the repository class} {--all : Includes all repositories, decorators (as set in config) & interfaces}';
+    protected $signature = 'make:epic';
 
     /**
      * The console command description.
@@ -24,18 +23,11 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected $description = 'Create epic repository/ies with configured decorators based on your config/epic-repositories';
 
     /**
-     * The type of class being generated.
+     * The repository.
      *
      * @var string
      */
-    protected $type = 'Repository';
-
-    /**
-     * The name of class being generated.
-     *
-     * @var string
-     */
-    private $repositoryClass;
+    protected $type;
 
     /**
      * The name of class being generated.
@@ -44,7 +36,9 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     private $model;
 
-    private $repositoryType;
+    /**
+     * @var string
+     */
     private $repositoryPath;
 
     /**
@@ -54,36 +48,24 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        $this->setRepositoryClass();
-
         $config = $this->laravel['config'];
-        $repositories = $config->get('epic-repositories.repositories');
-        foreach ($repositories as $repository => $path) {
-            $this->repositoryType = $repository;
-            $this->repositoryPath = $path;
-            parent::handle();
+        $namespaces = $config->get('epic-repositories.namespaces');
+        $bindings = $config->get('epic-repositories.bindings');
+        foreach ($bindings as $index => $configuration) {
+            $this->type = ucfirst($index);
+            foreach ($configuration['models'] as $name => $class) {
+                $this->model = ucfirst($name);
+                $this->repositoryPath = $namespaces['repositories'] . "\\" . $this->type;
+                foreach ($configuration['decorators'] as $decorator) {
+                    parent::handle();
+                    $this->call('make:epic:interface', ['name' => $this->model, 'repository' => $this->type]);
+                    $this->call('make:epic:decorator', ['name' => $this->model, 'repository' => $this->type, 'decorator' => ucfirst($decorator)]);
+                }
+
+            }
         }
-        $this->call('make:epic:interface', ['name' => $this->argument('model')]);
-        $this->call('make:epic:decorator', ['name' => $this->argument('model')]);
 
         $this->line("<info>Add Model in `models` array in config/epic-repositories.php</info>");
-    }
-
-    /**
-     * Set repository class name
-     *
-     * @return  RepositoryMakeCommand
-     */
-    private function setRepositoryClass()
-    {
-        $model = (trim($this->argument('model')));
-
-        $this->model = $model;
-
-        $this->repositoryClass = $model . 'Repository';
-        $this->type = $this->repositoryType . $this->type;
-
-        return $this;
     }
 
     /**
@@ -91,7 +73,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        return trim($this->repositoryClass);
+        return trim($this->model . $this->type . 'Repository');
     }
 
     /**
@@ -103,12 +85,8 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function replaceClass($stub, $name)
     {
-        if (!$this->argument('model')) {
-            throw new InvalidArgumentException("Missing required argument model name");
-        }
-
         $stub = parent::replaceClass($stub, $name);
-        $stub = str_replace('DummyType', ucfirst($this->repositoryType), $stub);
+        $stub = str_replace('Type', $this->type, $stub);
 
         return str_replace('Dummy', $this->model, $stub);
     }

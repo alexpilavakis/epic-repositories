@@ -2,9 +2,9 @@
 
 namespace DummyNamespace;
 
-use Ulex\EpicRepositories\Interfaces\CachingDecoratorInterface;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
-interface DummyClass extends CachingDecoratorInterface
+interface DummyClassEpiInterface extends EpicInterface
 {
 
 }

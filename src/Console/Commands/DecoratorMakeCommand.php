@@ -14,7 +14,7 @@ class DecoratorMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'make:epic:decorator {name : The required model name of the decorator class}';
+    protected $signature = 'make:epic:decorator {name : The required model name of the decorator class} {decorator : The required decorator} {repository : The required repository}';
 
     /**
      * The console command description.
@@ -28,7 +28,7 @@ class DecoratorMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $type = 'Decorator';
+    protected $type;
 
     /**
      * @var bool
@@ -52,12 +52,17 @@ class DecoratorMakeCommand extends GeneratorCommand
     /**
      * @var string
      */
-    private $decoratorType;
+    private $decoratorPath;
 
     /**
      * @var string
      */
-    private $decoratorPath;
+    private $decorator;
+
+    /**
+     * @var string
+     */
+    private $repository;
 
     /**
      * Execute the console command.
@@ -67,30 +72,13 @@ class DecoratorMakeCommand extends GeneratorCommand
     public function handle()
     {
         $config = $this->laravel['config'];
-        $decorators = $config->get('epic-repositories.decorators');
         $this->decoratorPath = $config->get('epic-repositories.namespaces.decorators');
-        foreach ($decorators as $decorator) {
-            $this->decoratorType = $decorator;
-            $this->setDecoratorClass();
-            parent::handle();
-        }
-    }
 
-    /**
-     * Set repository class name
-     *
-     * @return  DecoratorMakeCommand
-     */
-    private function setDecoratorClass()
-    {
-        $name = (trim($this->argument('name')));
-
-        $this->model = $name;
-        $decoratorName = ucfirst($this->decoratorType);
-        $this->decoratorClass = $name . "{$decoratorName}Decorator";
-        $this->type = $this->decoratorType . $this->type;
-
-        return $this;
+        $this->model = (trim($this->argument('name')));
+        $this->decorator = (trim($this->argument('decorator')));
+        $this->repository = (trim($this->argument('repository')));
+        $this->decoratorClass = $this->model . $this->repository. $this->decorator . 'Decorator';
+        parent::handle();
     }
 
     /**
@@ -113,9 +101,14 @@ class DecoratorMakeCommand extends GeneratorCommand
         if(!$this->argument('name')){
             throw new InvalidArgumentException("Missing required argument model name");
         }
+        if(!$this->argument('decorator')){
+            throw new InvalidArgumentException("Missing required argument decorator name");
+        }
+        $type = isset($this->repository) ? ucfirst($this->repository) : '';
 
         $stub = parent::replaceClass($stub, $name);
-        $stub = str_replace('DummyType', ucfirst($this->decoratorType), $stub);
+        $stub = str_replace('Type', $type, $stub);
+        $stub = str_replace('Domm', $this->decorator, $stub);
 
         return str_replace('Dummy', $this->model, $stub);
     }

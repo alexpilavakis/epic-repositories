@@ -5,8 +5,8 @@ namespace Ulex\EpicRepositories;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Ulex\EpicRepositories\Console\Commands\DecoratorMakeCommand;
+use Ulex\EpicRepositories\Console\Commands\EpicMakeCommand;
 use Ulex\EpicRepositories\Console\Commands\InterfaceMakeCommand;
-use Ulex\EpicRepositories\Console\Commands\RepositoryMakeCommand;
 
 class RepositoriesServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -21,9 +21,9 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
         }
         if ($this->app->runningInConsole()) {
             $this->commands([
-                RepositoryMakeCommand::class,
                 InterfaceMakeCommand::class,
                 DecoratorMakeCommand::class,
+                EpicMakeCommand::class
             ]);
         }
     }
@@ -35,22 +35,34 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
      */
     public function register()
     {
-        $models = $this->app->config['epic-repositories.models'];
         $namespaces = $this->app->config['epic-repositories.namespaces'];
-        $repositories = $this->app->config['epic-repositories.repositories'];
-        $repositoryNamespace = reset($repositories);
-        $decorators = $this->app->config['epic-repositories.decorators'];
-        foreach ($models as $name => $class) {
-            $interface = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
-            $repository = $repositoryNamespace . "\\" . $name . "Repository";
-            foreach ($decorators as $decorator) {
-                $decorator = $namespaces['decorators'] . "\\" . $name . ucfirst($decorator) . "Decorator";
-                $this->app->bind($interface, function () use ($name, $class, $decorator, $repository) {
-                    $model = new $class();
-                    $baseRepo = new $repository($model);
-                    return new $decorator($baseRepo, $this->app['cache.store'], $model);
-                });
+        $bindings = $this->app->config['epic-repositories.bindings'];
+        foreach ($bindings as $index => $configuration) {
+            $folder = ucfirst($index);
+            foreach ($configuration['models'] as $model => $class) {
+                $model = ucfirst($model);
+                $repository = $namespaces['repositories'] . "\\" . $folder . "\\" . $model . $folder . "Repository";
+                if ($this->app->runningInConsole() && !class_exists($repository)) {
+                    continue;
+                }
+                $interface = $namespaces['interfaces'] . "\\" . $model . $folder . "Interface";
+                $epic = new $repository($class);
+                foreach ($configuration['decorators'] as $decoratorName) {
+                    $decorator = $namespaces['decorators'] . "\\" . $model . $folder . ucfirst($decoratorName) . "Decorator";
+                    if ($this->app->runningInConsole() && !class_exists($decorator)) {
+                        continue;
+                    }
+                    $epic = new $decorator($class, $epic);
+                }
+                $this->app->singleton($interface,
+                    empty($decorator) ? function () use ($epic) {
+                        return $epic;
+                    } : function () use ($decorator, $class, $epic) {
+                        return new $decorator($class, $epic);
+                    }
+                );
             }
+            $decorator = null;
         }
     }
 
@@ -62,10 +74,15 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
     public function provides(): array
     {
         $provides = [];
-        $models = $this->app->config['epic-repositories.models'];
         $namespaces = $this->app->config['epic-repositories.namespaces'];
-        foreach ($models as $name => $class) {
-            $provides[] = $namespaces['interfaces'] . "\\" . $name . "RepositoryInterface";
+        $bindings = $this->app->config['epic-repositories.bindings'];
+        foreach ($bindings as $index => $configuration) {
+            $folder = ucfirst($index);
+            $repositoryName = $folder . "Repository";
+            foreach ($configuration['models'] as $model => $class) {
+                $model = ucfirst($model);
+                $provides[] = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+            }
         }
         return $provides;
     }

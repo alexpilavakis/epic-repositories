@@ -33,36 +33,78 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Namespaces of your Repositories sub folders
+    | Repositories and Decorators configuration
     |--------------------------------------------------------------------------
-    |
+    | Set the namespaces of your repositories sub folder.
+    | Set all available repositories and decorators.
+    | Set the base Repository that is used to access the database.
     |
     */
 
     'namespaces' => [
         'interfaces' => 'App\Repositories\Interfaces',
         'decorators' => 'App\Repositories\Decorators',
+        'repositories' => 'App\Repositories'
+    ],
+
+    'repositories' => [
+        'eloquent',
+        //'database',
+        //'elastic',
     ],
 
     'decorators' => [
         'caching',
-        //'logging'
+        'logging'
     ],
 
-    'repositories' => [
-        'eloquent' => 'App\Repositories\Eloquent',
-        'elastic' => 'App\Repositories\Elastic',
-        //...
-    ],
     /*
     |--------------------------------------------------------------------------
-    | Models that need Repository Binding
+    | Repositories/Decorators/Models Binding
     |--------------------------------------------------------------------------
+    |   Structure:
     |
+    |   'custom_repository' => [
+    |       'decorators' => ['custom_decorator', 'custom_decorator_2'],
+    |       'models' => [
+    |           'User' => App\Models\User::class,
+    |           'Post' => App\Models\Post::class,
+    |           ...
+    |       ]
+    |   ],
     |
     */
 
-    'models' => [
-        //'User' => App\Models\User::class
+    'bindings' => [
+        'eloquent' => [
+            'decorators' => ['caching'],
+            'models' => [
+                'User' => App\Models\User::class
+            ]
+        ],
+        /*'elastic' => [
+            'decorators' => ['logging'],
+            'models' => [
+                'User' => App\Models\User::class
+            ]
+        ],*/
+    ],
+
+    'configs' => [
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Elasticsearch Client Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This array will be passed to the Elasticsearch client.
+    | See configuration options here:
+    |
+    | https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/configuration.html
+    */
+        'elastic' => [
+            'hosts' => explode(',', env('ELASTICSEARCH_HOSTS', 'localhost:9200')),
+            'retries' => 3,
+        ],
+        //...
     ]
 ];
