@@ -52,17 +52,18 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
                     if ($this->app->runningInConsole() && !class_exists($decorator)) {
                         continue;
                     }
-                    $epic = new $decorator($class, $epic);
+                    $decorators[] = new $decorator($class, $epic);
                 }
                 $this->app->singleton($interface,
-                    empty($decorator) ? function () use ($epic) {
+                    empty($decorators) ? function () use ($epic) {
                         return $epic;
-                    } : function () use ($decorator, $class, $epic) {
-                        return new $decorator($class, $epic);
+                    } : function () use ($decorators, $class, $epic) {
+                        //TODO adjust to accept multiple decorators
+                        return reset($decorators);
                     }
                 );
             }
-            $decorator = null;
+            $decorators = null;
         }
     }
 
