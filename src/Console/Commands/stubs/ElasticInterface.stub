@@ -1,0 +1,20 @@
+<?php
+
+namespace DummyNamespace;
+
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
+
+interface DummyClassInterface extends EpicInterface
+{
+    /**
+     * @param array $params
+     * @return array|Hit
+     */
+    public function get(array $params);
+
+    /**
+     * @param array $params
+     * @return Result
+     */
+    public function search(array $params);
+}
