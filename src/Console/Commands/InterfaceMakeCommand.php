@@ -79,7 +79,13 @@ class InterfaceMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/Interface.stub';
+        $type = (trim($this->argument('repository')));
+        if ($type == 'elastic') {
+            return __DIR__ . '/stubs/ElasticInterface.stub';
+        } elseif ($type == 'eloquent') {
+            return __DIR__ . '/stubs/EloquentInterface.stub';
+        }
+        return __DIR__ . '/stubs/Interface.stub';
     }
 
     /**

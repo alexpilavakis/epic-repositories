@@ -2,6 +2,7 @@
 
 namespace Ulex\EpicRepositories\Decorators;
 
+use ReflectionException;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Closure;
@@ -17,12 +18,16 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     /** @var bool */
     protected $cacheForever = false;
 
+    /** @var bool */
+    protected $fromSource = false;
+
     const CACHE_TAG_COLLECTION = 'collection';
 
     /**
      * EloquentCachingDecorator constructor.
      * @param $model
      * @param EpicInterface|null $epic
+     * @throws ReflectionException
      */
     public function __construct($model, EpicInterface $epic = null)
     {
@@ -45,6 +50,15 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     protected function getEpic()
     {
         return $this->epic;
+    }
+
+    /**
+     * @return EpicInterface
+     */
+    public function fromSource()
+    {
+        $this->fromSource = true;
+        return $this;
     }
 
     /**
@@ -178,8 +192,12 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
      */
     protected function remember(string $function, $arguments, $tags = null)
     {
-        $key = $this->key($function, $arguments);
         $closure = $this->closure($function, $arguments);
+        if ($this->fromSource) {
+            $this->fromSource = false;
+            return $closure();
+        }
+        $key = $this->key($function, $arguments);
         $tags = $tags ?? $this->tag();
         if ($this->cacheForever) {
             return $this->cache->tags($tags)->rememberForever($key, $closure);

@@ -7,5 +7,6 @@ use Ulex\EpicRepositories\Decorators\TypeDommDecorator;
 
 class DummyTypeDommDecorator extends TypeDommDecorator implements DummyTypeEpicInterface
 {
-
+    /** @var Dummy */
+    protected $model;
 }
