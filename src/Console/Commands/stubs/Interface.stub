@@ -2,12 +2,9 @@
 
 namespace DummyNamespace;
 
-use App\Models\Dummy;
-use App\Repositories\Interfaces\DummyTypeEpicInterface;
-use Ulex\EpicRepositories\Repositories\AbstractType;
+use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
-class DummyTypeRepository extends AbstractType implements DummyTypeEpicInterface
+interface DummyClass extends EpicInterface
 {
-    /** @var Dummy */
-    protected $model;
+
 }
