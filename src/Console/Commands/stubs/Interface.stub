@@ -4,7 +4,7 @@ namespace DummyNamespace;
 
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
-interface DummyClassInterface extends EpicInterface
+interface DummyClass extends EpicInterface
 {
 
 }
