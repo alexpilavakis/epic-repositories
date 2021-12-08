@@ -2,9 +2,11 @@
 
 namespace DummyNamespace;
 
+use Ulex\EpicRepositories\Helpers\Elastic\Hit;
+use Ulex\EpicRepositories\Helpers\Elastic\Result;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
-interface DummyClassInterface extends EpicInterface
+interface DummyClass extends EpicInterface
 {
      /**
       * @return $this
