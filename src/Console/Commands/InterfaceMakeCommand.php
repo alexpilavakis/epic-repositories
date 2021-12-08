@@ -61,7 +61,7 @@ class InterfaceMakeCommand extends GeneratorCommand
         $name = (trim($this->argument('name')));
         $repository = (trim($this->argument('repository')));
 
-        $this->interfaceClass = $name . $repository . 'EpicInterface';
+        $this->interfaceClass = $name . $repository . 'Interface';
     }
 
     /**
