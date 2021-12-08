@@ -7,8 +7,9 @@ use Ulex\EpicRepositories\Helpers\Elastic\Result;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Client;
+use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 
-abstract class AbstractElastic implements EpicInterface
+abstract class AbstractElastic implements RepositoryInterface
 {
     /** @var string */
     protected $model;
@@ -36,6 +37,14 @@ abstract class AbstractElastic implements EpicInterface
         }
         $this->client = $clientBuilder->build();
         return $this->client;
+    }
+
+    /**
+     * @return EpicInterface
+     */
+    public function fromSource()
+    {
+        return $this;
     }
 
     /**

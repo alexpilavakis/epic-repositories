@@ -6,6 +6,11 @@ use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
 interface DummyClassInterface extends EpicInterface
 {
+     /**
+      * @return $this
+      */
+     public function fromSource();
+
     /**
      * @param array $params
      * @return array|Hit
