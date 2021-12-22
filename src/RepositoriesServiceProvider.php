@@ -79,10 +79,9 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
         $bindings = $this->app->config['epic-repositories.bindings'];
         foreach ($bindings as $index => $configuration) {
             $folder = ucfirst($index);
-            $repositoryName = $folder . "Repository";
             foreach ($configuration['models'] as $model => $class) {
                 $model = ucfirst($model);
-                $provides[] = $namespaces['interfaces'] . "\\" . $model . $repositoryName . "Interface";
+                $provides[] = $namespaces['interfaces'] . "\\" . $model . $folder . "Interface";
             }
         }
         return $provides;

@@ -42,17 +42,11 @@ cp vendor/ulex/epic-repositories/config/epic-repositories.php config/epic-reposi
 
 <h2> Create Repository/ies, Decorator/s with their Interfaces for a Model </h2>
 
-Run the following php artisan command where the argument is your Model name (example Post):
+First declare your models in config/epic-repositories
+
+Run the following php artisan command:
 ```php
-php artisan make:epic:repository Post
-```
-Expected Result:
-```php
-Eloquent Repository created successfully.
-Elastic Repository created successfully.
-Interface created successfully.
-Caching Decorator created successfully.
-Add Model in `models` array in config/epic-repositories.php
+php artisan make:epic
 ```
 The following folders will be created in your `app/Repositories` folder (if they don't exist):
 ```php
@@ -60,42 +54,6 @@ Decorators
 Eloquent
 Elastic //if enabled
 Interfaces
-```
-As seen in the result remember to add the Model in `config/epic-repositories.php` :
-```php
-...
-'models' => [
-        'User' => App\Models\User::class,
-        'Post' => App\Models\Post::class,
-]
-...
-```
-
-
-
-## What It Does
-This package provides an abstract structure that uses the Repository design pattern with decorators (caching as base) for you application.
-
-Once installed you can create Repositories for your models that cache the data from your queries.
-EloquentRepository is provided and ready to use. ElasticRepository can be enabled as well if you choose. Follow the same principle for any data resource you have on your application.
-
-```php
-// Example when injecting to a controller 
-/*
-* @param UserRepositoryInterface $siteRepository
-*/
-public function __construct(UserRepositoryInterface $userRepository)
-{
-    $this->userRepository = $userRepository;
-}
-
-...
-
-/** @var User $user */
-$user = $this->userRepository->getBy('name', $userName);
-
-$allFromElastic = $this->userRepository->useRepository('elastic')->all();
-$allFromEloquent = $this->userRepository->all();
 ```
 
 ## Contributing
