@@ -62,8 +62,8 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
                         return reset($decorators);
                     }
                 );
+                $decorators = null;
             }
-            $decorators = null;
         }
     }
 
