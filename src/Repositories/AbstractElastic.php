@@ -78,7 +78,7 @@ abstract class AbstractElastic implements RepositoryInterface
      * @param array $params
      * @return array
      */
-    private function setParams(array $params)
+    protected function setParams(array $params)
     {
         $params['index'] = $params['index'] ?? $this->index;
         $params['type'] = $params['type'] ?? null;
@@ -109,5 +109,57 @@ abstract class AbstractElastic implements RepositoryInterface
     {
         $result = $this->client->search($this->setParams($params));
         return $this->processResult($result);
+    }
+
+    /**
+     * @param $params
+     * @return Result
+     */
+    public function count($params)
+    {
+        $result = $this->client->count($this->setParams($params));
+        return $result['count'];
+    }
+
+    /**
+     ************
+     * Index ***
+     ************
+     */
+
+    /**
+     * @param array $attributes
+     * @return string
+     */
+    public function index(array $attributes)
+    {
+        $params = [];
+        if (isset($attributes['id'])) {
+            $params['id'] = $attributes['id'];
+            unset($attributes['id']);
+        }
+        $params['body'] = $attributes;
+        $result = $this->client->index($this->setParams($params));
+        return $result['result'];
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function delete(int $id)
+    {
+        $result = $this->client->delete($this->setParams(compact('id')));
+        return $result['result'];
+    }
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    public function bulk(array $params)
+    {
+        $result = $this->client->bulk($this->setParams($params));
+        return $result;
     }
 }
