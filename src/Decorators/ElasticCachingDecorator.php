@@ -54,4 +54,46 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     {
         return $this->remember(__FUNCTION__, func_get_args());
     }
+
+    /**
+     * @param array $params
+     * @return int
+     */
+    public function count(array $params)
+    {
+        return $this->remember(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     ************
+     * Index ***
+     ************
+     */
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    public function index(array $params)
+    {
+        return $this->getEpic()->index($params);
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function delete(int $id)
+    {
+        return $this->getEpic()->delete($id);
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function bulk(array $params)
+    {
+        return $this->getEpic()->bulk($params);
+    }
 }

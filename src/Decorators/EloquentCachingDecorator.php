@@ -107,7 +107,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function createMany(array $attributes)
     {
-        $this->repository->createMany($attributes);
+        $this->getEpic()->createMany($attributes);
         $this->flushCollections();
     }
 
