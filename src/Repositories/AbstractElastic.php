@@ -48,7 +48,7 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     * @param $result
+     * @param $params
      * @return Result
      */
     protected function processResult($params)
