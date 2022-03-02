@@ -172,9 +172,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
     public function delete($model)
     {
         $result = $this->getEpic()->delete($model);
-        if ($result) {
-            $this->flushGetKeys($model);
-        }
+        $this->flushGetKeys($model);
         return $result;
     }
 
