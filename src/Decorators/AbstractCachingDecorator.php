@@ -71,10 +71,10 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     }
 
     /**
-     * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
-     * @return array
+     * This will prefix the key base on the CachingDecorator
+     * @return string
      */
-    abstract protected function tag();
+    abstract protected function getKeyPrefix($key);
 
     /**
      * Cache with multiple tags that can be invalidated
@@ -83,7 +83,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
      */
     protected function tags(array $extraTags): array
     {
-        return array_merge($this->tag(), $extraTags);
+        return array_merge($this->getKeyPrefix('key'), $extraTags);
     }
 
     /**
@@ -125,7 +125,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     }
 
     /**
-     * Flush specific collection used in multiple tags
+     * Flush collection tags
      */
     protected function flushCollections()
     {
@@ -133,35 +133,29 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     }
 
     /**
-     * @param null $tag
+     * @param array|string $tags
      */
-    protected function flushTag($tag = null)
+    protected function flushTag($tags)
     {
-        $tag = $tag ?? $this->tag();
-        $this->cache->tags($tag)->flush();
+        $this->cache->tags($tags)->flush();
     }
 
     /**
      * @param string $function
-     * @param $attributes
-     * @param null $tags
+     * @param null $attributes
      */
-    public function flushFunction(string $function, $attributes = null, $tags = null)
+    public function flushFunction(string $function, $attributes = null)
     {
-        $key = $this->key($function, $attributes);
-        $tags = $tags ?? $this->tag();
-        $this->forget($key, $tags);
+        $this->forget($this->key($function, $attributes));
     }
 
     /**
      * @param $key
-     * @param null $tags
      * @return bool
      */
-    public function forget($key, $tags = null)
+    public function forget($key)
     {
-        $tags = $tags ?? $this->tag();
-        return $this->cache->tags($tags)->forget($key);
+        return $this->cache->forget($this->getKeyPrefix($key));
     }
 
     /**
@@ -190,7 +184,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
      * @param array|null $tags
      * @return array|mixed
      */
-    protected function remember(string $function, $arguments, $tags = null)
+    protected function remember(string $function, $arguments, array $tags = null)
     {
         $closure = $this->closure($function, $arguments);
         if ($this->fromSource) {
@@ -198,11 +192,13 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
             return $closure();
         }
         $key = $this->key($function, $arguments);
-        $tags = $tags ?? $this->tag();
         if ($this->cacheForever) {
-            return $this->cache->tags($tags)->rememberForever($key, $closure);
+            return $this->cache->rememberForever($this->getKeyPrefix($key), $closure);
         }
-        return $this->cache->tags($tags)->remember($key, $this->ttl, $closure);
+        if (!empty($tags)) {
+            return $this->cache->tags($tags)->remember($this->getKeyPrefix($key), $this->ttl, $closure);
+        }
+        return $this->cache->remember($this->getKeyPrefix($key), $this->ttl, $closure);
     }
 
     /**

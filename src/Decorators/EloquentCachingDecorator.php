@@ -5,13 +5,12 @@ namespace Ulex\EpicRepositories\Decorators;
 abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 {
     /**
-     * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
-     * @return array
+     * @param $key
+     * @return string
      */
-    protected function tag(): array
+    protected function getKeyPrefix($key): string
     {
-        $name = "eloquent:{$this->name}";
-        return [$name];
+        return "eloquent:{$this->name}:{$key}";
     }
 
     /**
@@ -71,7 +70,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function all()
     {
-        return $this->remember(__FUNCTION__, func_get_args(), $this->tags([self::CACHE_TAG_COLLECTION]));
+        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
     }
 
     /**
@@ -80,7 +79,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function findByConditions(array $conditions)
     {
-        return $this->remember(__FUNCTION__, func_get_args(), $this->tags([self::CACHE_TAG_COLLECTION]));
+        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
     }
 
     /**
