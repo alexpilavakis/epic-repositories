@@ -27,7 +27,7 @@ class InterfaceMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $type = 'Interface';
+    protected $type;
 
     /**
      * @var bool
@@ -61,7 +61,7 @@ class InterfaceMakeCommand extends GeneratorCommand
         $name = (trim($this->argument('name')));
         $repository = (trim($this->argument('repository')));
 
-        $this->interfaceClass = $name . $repository . 'Interface';
+        $this->interfaceClass = $this->type = $name . $repository . 'Interface';
     }
 
     /**

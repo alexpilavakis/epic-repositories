@@ -8,13 +8,12 @@ use Ulex\EpicRepositories\Helpers\Elastic\Result;
 abstract class ElasticCachingDecorator extends AbstractCachingDecorator
 {
     /**
-     * NOTE: Cache tags are not supported when using the `file` or `database` cache drivers.
-     * @return array
+     * @param $key
+     * @return string
      */
-    protected function tag(): array
+    protected function getKeyPrefix($key): string
     {
-        $name = "elastic:{$this->name}";
-        return [$name];
+        return "elastic:{$this->name}:{$key}";
     }
 
     /**

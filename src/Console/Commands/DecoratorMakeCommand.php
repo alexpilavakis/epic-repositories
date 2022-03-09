@@ -77,7 +77,7 @@ class DecoratorMakeCommand extends GeneratorCommand
         $this->model = (trim($this->argument('name')));
         $this->decorator = (trim($this->argument('decorator')));
         $this->repository = (trim($this->argument('repository')));
-        $this->decoratorClass = $this->model . $this->repository. $this->decorator . 'Decorator';
+        $this->decoratorClass = $this->type = $this->model . $this->repository. $this->decorator . 'Decorator';
         parent::handle();
     }
 

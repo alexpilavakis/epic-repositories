@@ -50,12 +50,11 @@ return [
     'repositories' => [
         'eloquent',
         //'database',
-        //'elastic',
+        //'elastic', //Note: In order to use `elastic` repository you will have to add "elasticsearch/elasticsearch" package to your composer.json
     ],
 
     'decorators' => [
         'caching',
-        'logging'
     ],
 
     /*
@@ -83,7 +82,7 @@ return [
             ]
         ],
         /*'elastic' => [
-            'decorators' => ['logging'],
+            'decorators' => ['caching'],
             'models' => [
                 'User' => App\Models\User::class
             ]

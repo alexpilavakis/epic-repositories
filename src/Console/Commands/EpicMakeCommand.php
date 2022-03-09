@@ -30,6 +30,13 @@ class EpicMakeCommand extends GeneratorCommand
     protected $type;
 
     /**
+     * The repository type
+     *
+     * @var string
+     */
+    protected $repositoryType;
+
+    /**
      * The name of class being generated.
      *
      * @var string
@@ -52,20 +59,18 @@ class EpicMakeCommand extends GeneratorCommand
         $namespaces = $config->get('epic-repositories.namespaces');
         $bindings = $config->get('epic-repositories.bindings');
         foreach ($bindings as $index => $configuration) {
-            $this->type = ucfirst($index);
+            $this->repositoryType = ucfirst($index);
             foreach ($configuration['models'] as $name => $class) {
                 $this->model = ucfirst($name);
-                $this->repositoryPath = $namespaces['repositories'] . "\\" . $this->type;
+                $this->repositoryPath = $namespaces['repositories'] . "\\" . $this->repositoryType;
+                $this->type = $this->getNameInput();
                 foreach ($configuration['decorators'] as $decorator) {
                     parent::handle();
-                    $this->call('make:epic:interface', ['name' => $this->model, 'repository' => $this->type]);
-                    $this->call('make:epic:decorator', ['name' => $this->model, 'repository' => $this->type, 'decorator' => ucfirst($decorator)]);
+                    $this->call('make:epic:interface', ['name' => $this->model, 'repository' => $this->repositoryType]);
+                    $this->call('make:epic:decorator', ['name' => $this->model, 'repository' => $this->repositoryType, 'decorator' => ucfirst($decorator)]);
                 }
-
             }
         }
-
-        $this->line("<info>Add Model in `models` array in config/epic-repositories.php</info>");
     }
 
     /**
@@ -73,7 +78,7 @@ class EpicMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        return trim($this->model . $this->type . 'Repository');
+        return trim($this->model . $this->repositoryType . 'Repository');
     }
 
     /**
@@ -86,7 +91,7 @@ class EpicMakeCommand extends GeneratorCommand
     protected function replaceClass($stub, $name)
     {
         $stub = parent::replaceClass($stub, $name);
-        $stub = str_replace('Type', $this->type, $stub);
+        $stub = str_replace('Type', $this->repositoryType, $stub);
 
         return str_replace('Dummy', $this->model, $stub);
     }
