@@ -56,25 +56,25 @@ Run the following php artisan command:
 ```php
 php artisan make:epic
 ```
-The following folders will be created in your `app/Repositories` folder (if they don't exist):
+Depending on you configuration, the necessary folders & classes will be created in your `app/Repositories` folder. 
+Example:
 ```php
-Decorators
-Eloquent
-Elastic //if enabled
-Interfaces
+UserEloquentRepository created successfully.
+UserEloquentInterface created successfully.
+UserEloquentCachingDecorator created successfully.
 ```
 
 ## How to use
-This package provides an abstract structure that uses the Repository design pattern with caching decorators for you application.
+This package provides an abstract structure that uses the Repository design pattern with caching decorator/s for you application.
 
 Once installed you can create Repositories for your models that cache the data from your queries.
 Eloquent and Elastic Repositories are provided and ready to use if enabled. Follow the same principle for any data resource you have on your application.
 
 ```php
 # Example when injecting to a controller 
-use App\Repositories\Interfaces\UserEloquentRepositoryInterface;
+use App\Repositories\Interfaces\UserEloquentInterface;
 
-public function __construct(UserEloquentRepositoryInterface $userRepository)
+public function __construct(UserEloquentInterface $userRepository)
 {
     $this->userRepository = $userRepository;
 }
