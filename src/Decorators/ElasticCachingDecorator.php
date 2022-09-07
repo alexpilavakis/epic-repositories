@@ -64,6 +64,26 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
+     * @param $field
+     * @param $value
+     * @return Result
+     */
+    public function findBy($field, $value): Result
+    {
+        return $this->remember(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return int
+     */
+    public function countBy($field, $value): int
+    {
+        return $this->remember(__FUNCTION__, func_get_args());
+    }
+
+    /**
      ************
      * Index ***
      ************

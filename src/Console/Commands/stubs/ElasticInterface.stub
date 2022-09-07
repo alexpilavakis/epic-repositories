@@ -32,6 +32,20 @@ interface DummyClass extends EpicInterface
     public function count(array $params);
 
     /**
+     * @param $field
+     * @param $value
+     * @return Result
+     */
+    public function findBy($field, $value);
+
+    /**
+     * @param $field
+     * @param $value
+     * @return int
+     */
+    public function countBy($field, $value);
+
+    /**
      * @param array $attributes
      * @return string
      */
