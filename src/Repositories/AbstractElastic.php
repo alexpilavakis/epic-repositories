@@ -63,7 +63,7 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     * @param $hit
+     * @param $result
      * @return Hit
      */
     protected function extractHit($result)
@@ -84,6 +84,20 @@ abstract class AbstractElastic implements RepositoryInterface
         $params['index'] = $params['index'] ?? $this->index;
         $params['type'] = $params['type'] ?? null;
         return $params;
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return array
+     */
+    protected function match($field, $value)
+    {
+        return [
+            'match' => [
+                $field => $value
+            ]
+        ];
     }
 
     /**
@@ -114,12 +128,40 @@ abstract class AbstractElastic implements RepositoryInterface
 
     /**
      * @param $params
-     * @return Result
+     * @return int
      */
     public function count($params)
     {
         $result = $this->client->count($this->setParams($params));
         return $result['count'];
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return Result
+     */
+    public function findBy($field, $value): Result
+    {
+        return $this->search([
+            'body' => [
+                'query' => $this->match($field, $value)
+            ]
+        ]);
+    }
+
+    /**
+     * @param $field
+     * @param $value
+     * @return int
+     */
+    public function countBy($field, $value): int
+    {
+        return $this->count([
+            'body' => [
+                'query' => $this->match($field, $value)
+            ]
+        ]);
     }
 
     /**
@@ -160,7 +202,6 @@ abstract class AbstractElastic implements RepositoryInterface
      */
     public function bulk(array $params)
     {
-        $result = $this->client->bulk($this->setParams($params));
-        return $result;
+        return $this->client->bulk($this->setParams($params));
     }
 }

@@ -4,6 +4,8 @@ namespace Ulex\EpicRepositories\Helpers\Elastic;
 
 class Result
 {
+    const AGGS_KEY = 'key';
+    const AGGS_COUNT = 'doc_count';
 
     /** @var int */
     private $total;
@@ -63,8 +65,20 @@ class Result
     }
 
     /**
+     * Result Example
+     *
+     * "buckets": [
+     *  {
+     *      "key": "name_1",
+     *      "doc_count": 10
+     *  },
+     *  {
+     *      "key": "name_2",
+     *      "doc_count": 6
+     *  }]
+     *
      * @param $name
-     * @return array|mixed
+     * @return array
      */
     public function getAggregationBuckets($name)
     {
