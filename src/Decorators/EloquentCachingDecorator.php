@@ -158,7 +158,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
         if ($result) {
             $models = $this->findByConditions($conditions);
             foreach ($models as $model) {
-                $this->flushGetKeys($model, $attributes);
+                $this->flushGetKeys($model);
             }
         }
         return $result;
