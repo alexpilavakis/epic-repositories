@@ -79,9 +79,9 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     /**
      * Cache with multiple tags that can be invalidated
      * @param array $extraTags
-     * @return array
+     * @return string
      */
-    protected function tags(array $extraTags): array
+    protected function tags(array $extraTags): string
     {
         return array_merge($this->getKeyPrefix('key'), $extraTags);
     }
@@ -90,16 +90,14 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
      * Flush all 'get' keys for this model instance along with any collections
      *
      * @param $model
-     * @param array|null $attributes
      */
-    public function flushGetKeys($model, array $attributes = null)
+    public function flushGetKeys($model)
     {
         if (isset($model->id)) {
             $this->forget("find:{$model->id}");
             $this->forget("findOrFail:{$model->id}");
         }
-        $attributes = $attributes ?? (is_object($model) ? $model->getAttributes() : $model);
-        $this->flushAttributes($attributes);
+        $this->flushAttributes($model->getAttributes());
         $this->flushCollections();
     }
 
@@ -169,11 +167,8 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
             return $function;
         }
         if (isset($arguments[0]) && is_array($arguments[0])) {
-            $key = $function;
-            foreach ($arguments[0] as $name => $value) {
-                $key .= ':' . $name . ':' . $value;
-            }
-            return $key;
+            $arguments = hash('sha1', (json_encode($arguments)));
+            return "{$function}:{$arguments}";
         }
         return sprintf('%s:%s', $function, implode(':', $arguments));
     }
