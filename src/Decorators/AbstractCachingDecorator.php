@@ -77,16 +77,6 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     abstract protected function getKeyPrefix($key);
 
     /**
-     * Cache with multiple tags that can be invalidated
-     * @param array $extraTags
-     * @return string
-     */
-    protected function tags(array $extraTags): string
-    {
-        return array_merge($this->getKeyPrefix('key'), $extraTags);
-    }
-
-    /**
      * Flush all 'get' keys for this model instance along with any collections
      *
      * @param $model
@@ -97,7 +87,8 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
             $this->forget("find:{$model->id}");
             $this->forget("findOrFail:{$model->id}");
         }
-        $this->flushAttributes($model->getAttributes());
+        $attributes = is_object($model) ? $model->getAttributes() : $model;
+        $this->flushAttributes($attributes);
         $this->flushCollections();
     }
 
