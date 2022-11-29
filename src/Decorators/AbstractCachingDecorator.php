@@ -158,10 +158,20 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
             return $function;
         }
         if (isset($arguments[0]) && is_array($arguments[0])) {
-            $arguments = hash('sha1', (json_encode($arguments)));
-            return "{$function}:{$arguments}";
+            return $this->createHashKey($arguments, $function);
         }
         return sprintf('%s:%s', $function, implode(':', $arguments));
+    }
+
+    /**
+     * @param $function
+     * @param $arguments
+     * @return string
+     */
+    protected function createHashKey($function, $arguments)
+    {
+        $arguments = hash('sha1', (json_encode($arguments)));
+        return "{$function}:{$arguments}";
     }
 
     /**
