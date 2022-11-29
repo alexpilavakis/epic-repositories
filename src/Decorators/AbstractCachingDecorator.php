@@ -157,10 +157,31 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         if (empty($arguments)) {
             return $function;
         }
-        if (isset($arguments[0]) && is_array($arguments[0])) {
-            return $this->createHashKey($arguments, $function);
+        if (is_array($arguments[0]) || is_object($arguments[0])) {
+            return $this->advanceKey($function, $arguments);
         }
+        return $this->simpleKey($function, $arguments);
+    }
+
+    /**
+     * @param $function
+     * @param $arguments
+     * @return string
+     */
+    protected function simpleKey($function, $arguments)
+    {
         return sprintf('%s:%s', $function, implode(':', $arguments));
+    }
+
+    protected function advanceKey($function, $arguments)
+    {
+        /** Convert any objects to arrays */
+        foreach ($arguments as $key => $argument) {
+            if (is_object($argument)) {
+                $arguments[$key] = (array)$argument;
+            }
+        }
+        return $this->createHashKey($function, $arguments);
     }
 
     /**
