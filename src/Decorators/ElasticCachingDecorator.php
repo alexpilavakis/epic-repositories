@@ -32,8 +32,7 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
         if (empty($arguments)) {
             return $function;
         }
-        $arguments = json_encode($arguments);
-        return "{$function}:{$arguments}";
+        return $this->createHashKey($function, $arguments);
     }
 
     /**
