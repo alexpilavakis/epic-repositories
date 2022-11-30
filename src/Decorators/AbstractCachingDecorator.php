@@ -157,7 +157,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         if (empty($arguments)) {
             return $function;
         }
-        if (is_array($arguments[0]) || is_object($arguments[0])) {
+        if (isset($arguments[0]) && (is_array($arguments[0]) || is_object($arguments[0]))) {
             return $this->advanceKey($function, $arguments);
         }
         return $this->simpleKey($function, $arguments);
