@@ -23,6 +23,19 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
      */
 
     /**
+     * @param $function
+     * @param null $arguments
+     * @return string
+     */
+    protected function key($function, $arguments = null)
+    {
+        if (empty($arguments)) {
+            return $function;
+        }
+        return $this->advanceKey($function, $arguments);
+    }
+
+    /**
      * @param array $params
      * @return Hit
      */
