@@ -60,10 +60,11 @@ interface DummyClass extends EpicInterface
     public function firstOrCreate($attributes);
 
     /**
-     * @param $attributes
+     * @param array $attributes
+     * @param array $values
      * @return mixed
      */
-    public function updateOrCreate($attributes);
+    public function updateOrCreate(array $attributes, array $values = [])
 
     /**
      * @param $model

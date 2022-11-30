@@ -156,12 +156,13 @@ abstract class AbstractEloquent implements RepositoryInterface
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
+     * @param array $values
      * @return mixed
      */
-    public function updateOrCreate($attributes)
+    public function updateOrCreate(array $attributes, array $values = [])
     {
-        return $this->model->updateOrCreate($attributes);
+        return $this->model->updateOrCreate($attributes, $values);
     }
 
     /**
