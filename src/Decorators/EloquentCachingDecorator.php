@@ -122,12 +122,13 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
+     * @param array $values
      * @return mixed
      */
-    public function updateOrCreate($attributes)
+    public function updateOrCreate(array $attributes, array $values = [])
     {
-        $model = $this->getEpic()->updateOrCreate($attributes);
+        $model = $this->getEpic()->updateOrCreate($attributes, $values);
         $this->flushGetKeys($model);
         return $model;
     }
