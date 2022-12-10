@@ -48,6 +48,15 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
+     * Flush all 'get' keys for this model instance along with any collections
+     *
+     * @param $model
+     */
+    public function flushGetKeys($model)
+    {
+    }
+
+    /**
      * @param $params
      * @return Result
      */
