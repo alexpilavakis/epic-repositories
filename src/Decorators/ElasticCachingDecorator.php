@@ -13,7 +13,44 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
      */
     protected function getKeyPrefix($key): string
     {
-        return "elastic:{$this->name}:{$key}";
+        return "elastic:$this->name:$key";
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCollectionPrefix()
+    {
+        return "elastic:$this->name:" . self::CACHE_TAG_COLLECTION;
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    protected function flushById($id): void
+    {
+        $this->flushFunction('get', compact('id'));
+    }
+
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return void
+     */
+    protected function flushByAttribute($attribute, $value): void
+    {
+        $this->flushFunction('findBy', [$attribute, $value]);
+        $this->flushFunction('countBy', [$attribute, $value]);
+    }
+
+    /**
+     * Flush collection tags
+     */
+    protected function flushCollections()
+    {
+        $this->flushTag($this->getCollectionPrefix());
     }
 
     /**
