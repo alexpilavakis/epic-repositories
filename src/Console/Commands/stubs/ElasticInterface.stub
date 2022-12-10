@@ -21,10 +21,10 @@ interface DummyClass extends EpicInterface
      public function fromSource();
 
     /**
-     * @param array $params
-     * @return array|Hit
+     * @param int $id
+     * @return Hit
      */
-    public function get(array $params);
+    public function get(int $id);
 
     /**
      * @param array $params

@@ -81,12 +81,12 @@ public function __construct(UserEloquentInterface $userRepository)
 
 ...
 
-public function get($name)
+public function find($id)
 {
     //retrieve from db and then cache the result
-    $user = $this->userRepository->getBy('name', $userName);
+    $user = $this->userRepository->find($id);
     //retrieve straight from source, uncached
-    $user = $this->userRepository->fromSource()->getBy('name', $userName);
+    $user = $this->userRepository->fromSource()->find($id);
 } 
 ```
 ## Extending a model's CachingDecorator

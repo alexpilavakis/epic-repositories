@@ -116,11 +116,12 @@ abstract class AbstractElastic implements RepositoryInterface
      */
 
     /**
-     * @param array $params
+     * @param int $id
      * @return Hit
      */
-    public function get(array $params)
+    public function get(int $id)
     {
+        $params['id'] = $id;
         $result = $this->client->get($this->setParams($params));
         return $this->extractHit($result);
     }

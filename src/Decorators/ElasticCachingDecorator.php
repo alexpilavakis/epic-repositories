@@ -30,7 +30,7 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
      */
     protected function flushById($id): void
     {
-        $this->flushFunction('get', [compact('id')]);
+        $this->flushFunction('get', [$id]);
     }
 
 
@@ -73,10 +73,10 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     * @param array $params
+     * @param int $id
      * @return Hit
      */
-    public function get(array $params)
+    public function get(int $id)
     {
         return $this->remember(__FUNCTION__, func_get_args());
     }
