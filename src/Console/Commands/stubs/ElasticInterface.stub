@@ -9,6 +9,13 @@ use Ulex\EpicRepositories\Interfaces\EpicInterface;
 interface DummyClass extends EpicInterface
 {
      /**
+      * Flush all 'get' keys for this model instance along with any collections
+      *
+      * @param $model
+      */
+     public function flushGetKeys($model);
+
+     /**
       * @return $this
       */
      public function fromSource();
