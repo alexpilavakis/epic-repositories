@@ -10,4 +10,16 @@ class DummyTypeDommDecorator extends TypeDommDecorator implements DummyTypeInter
 {
     /** @var Dummy */
     protected $model;
+
+    /**
+     * Flush all 'get' keys for this model instance along with any collections
+
+     * @param Dummy $model
+     * @return void
+     */
+    public function flushGetKeys($model)
+    {
+        //$this->flushFunction('newFunction', ['id' => $model->id]);
+        parent::flushGetKeys($model);
+    }
 }

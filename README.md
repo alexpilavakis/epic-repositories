@@ -50,7 +50,19 @@ Take some time to review this config file. Here you can adjust various configura
 
 <h2> Create Repository/ies, Decorator/s with their Interfaces for a Model </h2>
 
-First declare your models in config/epic-repositories
+#### First declare your models in `config/epic-repositories`
+```php
+...
+'bindings' => [
+        'eloquent' => [
+            'decorators' => ['caching'],
+            'models' => [
+                'User' => App\Models\User::class,
+                //'NewModel => App\Models\NewModel::class,
+            ]
+        ],
+...
+```
 
 Run the following php artisan command:
 ```php
@@ -91,7 +103,8 @@ public function find($id)
 ```
 ## Extending a model's CachingDecorator
 For GET functions use the `remember` function the same way as in the AbstractCachingDecorator. This will ensure that this function is cached and invalidated properly. 
-NOTE that this will return a single result. 
+
+### Functions that return a single result:
 #### PostsEloquentCachingDecorator.php
 ```php
 public function getLatestPost($user_id)
@@ -103,8 +116,7 @@ public function getLatestPost($user_id)
 ```php
 public function flushGetKeys($model, $attributes = null)
 {
-    $user_id = $model->user_id;
-    $key = $this->key('getLatestPost', compact('user_id'));
+    $this->flushFunction('getLatestPost', ['user_id' => $model->user_id]);
     parent::flushGetKeys($model, $attributes);
 }
 ```
@@ -116,6 +128,7 @@ public function getLatestPost($user_id)
     return $this->model->query()->where('user_id', '=', $user_id)->latest()->first();
 }
 ```
+### Functions that return a collection of results:
 For GET functions that return collections you can pass tags to `remember` function. Use `collection` tag or add a custom one or multiple ones.
 ```php
 public function getUserPosts($user_id)
@@ -123,15 +136,16 @@ public function getUserPosts($user_id)
     return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
 }
 ```
-The above tag will be flushed in `flushGetKeys` which calls `flushCollections()`. If you add a custom tag and you want to it to be flushed as well then you can extend `flushCollections` like:  
+The above tag will be flushed in `flushGetKeys` which calls `flushCollections()`. If you add a custom tag, and you want to it to be flushed as well, then you can extend `flushCollections` like:  
 ```php
 public function flushCollections()
 {
     $this->flushTag('myTag');
     parent::flushCollections();
 }
-
 ```
+If you are adding functions that create a column then, as you can see in AbstractCachingDecorator, you need to add 
+`$this->flushCollections();` after the entry is created so that all collections are flushed and can include your new entry/ies.
 
 ## Contributing
 

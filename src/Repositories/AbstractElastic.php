@@ -11,14 +11,9 @@ use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 
 abstract class AbstractElastic implements RepositoryInterface
 {
-    /** @var string */
-    protected $model;
-
-    /** @var string */
-    protected $index;
-
-    /** @var Client */
-    public $client;
+    protected string $model;
+    protected string $index;
+    public Client $client;
 
     /**
      * AbstractElastic constructor.
@@ -110,9 +105,9 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     ************
-     * Search ***
-     ************
+     ********
+     * Search
+     ********
      */
 
     /**
@@ -175,9 +170,9 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     ************
-     * Index ***
-     ************
+     *******
+     * Index
+     *******
      */
 
     /**

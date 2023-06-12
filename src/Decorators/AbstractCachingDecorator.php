@@ -33,11 +33,10 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     }
 
     /**
-     ********************
-     * Configurations ***
-     ** Caching & *******
-     *** Flushing * *****
-     ********************
+     *****************
+     * Configurations
+     * Caching & Flushing
+     *****************
      */
 
     /**
@@ -184,6 +183,11 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         return sprintf('%s:%s', $function, implode(':', $arguments));
     }
 
+    /**
+     * @param $function
+     * @param $arguments
+     * @return string
+     */
     protected function advanceKey($function, $arguments)
     {
         /** Convert any objects to arrays */

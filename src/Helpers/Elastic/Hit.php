@@ -4,12 +4,11 @@ namespace Ulex\EpicRepositories\Helpers\Elastic;
 
 class Hit
 {
-    /** @var string */
-    private $_index;
+    private string $_index;
+
     /** @var int|string */
     private $_id;
-    /** @var array */
-    private $_source;
+    private array $_source;
 
     /**
      * @return string
@@ -24,7 +23,7 @@ class Hit
      */
     public function setIndex(string $index): void
     {
-        $this->_index = $index ?? '';
+        $this->_index = $index;
     }
 
     /**

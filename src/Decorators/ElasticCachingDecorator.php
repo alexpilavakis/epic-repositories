@@ -54,10 +54,11 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     ************
-     * Search ***
-     ************
+     *****************
+     * Search Functions
+     *****************
      */
+
 
     /**
      * @param $function
@@ -120,9 +121,9 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     ************
-     * Index ***
-     ************
+     *****************
+     * Index Functions
+     *****************
      */
 
     /**

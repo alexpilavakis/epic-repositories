@@ -7,14 +7,9 @@ class Result
     const AGGS_KEY = 'key';
     const AGGS_COUNT = 'doc_count';
 
-    /** @var int */
-    private $total;
-
-    /** @var array */
-    private $hits;
-
-    /** @var array */
-    private $aggregations;
+    private int $total;
+    private array $hits;
+    private array $aggregations;
 
     /**
      * @return int

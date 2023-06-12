@@ -53,8 +53,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 
     /**
      ************
-     * Find *****
-     ** Single **
+     * Find Single
      ************
      */
 
@@ -98,8 +97,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 
     /**
      **********
-     * Find ***
-     ** Many **
+     * Find Many
      **********
      */
 
@@ -121,11 +119,9 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     *************
-     * Create ****
-     ** Update ***
-     *** Delete **
-     *************
+     ****************
+     * Create, Update, Delete
+     ****************
      */
 
     /**
