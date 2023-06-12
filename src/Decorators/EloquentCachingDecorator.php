@@ -1,6 +1,7 @@
 <?php
 
 namespace Ulex\EpicRepositories\Decorators;
+use Illuminate\Database\Eloquent\Collection;
 
 abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 {
@@ -119,6 +120,16 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
+     * @param string $column
+     * @param array $values
+     * @return Collection
+     */
+    public function findWhereIn(string $column, array $values)
+    {
+        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
+    }
+
+    /**
      ****************
      * Create, Update, Delete
      ****************
@@ -192,6 +203,24 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
         $result = $this->getEpic()->updateByConditions($conditions, $attributes);
         if ($result) {
             $models = $this->findByConditions($conditions);
+            foreach ($models as $model) {
+                $this->flushGetKeys($model);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param string $column
+     * @param array $whereIn
+     * @param array $attributes
+     * @return bool
+     */
+    public function updateWhereIn(string $column, array $whereIn, array $attributes)
+    {
+        $result = $this->getEpic()->updateWhereIn($column, $whereIn, $attributes);
+        if ($result) {
+            $models = $this->findWhereIn($column, $whereIn);
             foreach ($models as $model) {
                 $this->flushGetKeys($model);
             }
