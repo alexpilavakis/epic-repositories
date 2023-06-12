@@ -11,14 +11,9 @@ use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 
 abstract class AbstractElastic implements RepositoryInterface
 {
-    /** @var string */
-    protected $model;
-
-    /** @var string */
-    protected $index;
-
-    /** @var Client */
-    public $client;
+    protected string $model;
+    protected string $index;
+    public Client $client;
 
     /**
      * AbstractElastic constructor.
@@ -45,6 +40,15 @@ abstract class AbstractElastic implements RepositoryInterface
     public function fromSource()
     {
         return $this;
+    }
+
+    /**
+     * Flush all 'get' keys for this model instance along with any collections
+     *
+     * @param $model
+     */
+    public function flushGetKeys($model)
+    {
     }
 
     /**
@@ -101,17 +105,18 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     ************
-     * Search ***
-     ************
+     ********
+     * Search
+     ********
      */
 
     /**
-     * @param array $params
+     * @param int $id
      * @return Hit
      */
-    public function get(array $params)
+    public function get(int $id)
     {
+        $params['id'] = $id;
         $result = $this->client->get($this->setParams($params));
         return $this->extractHit($result);
     }
@@ -165,9 +170,9 @@ abstract class AbstractElastic implements RepositoryInterface
     }
 
     /**
-     ************
-     * Index ***
-     ************
+     *******
+     * Index
+     *******
      */
 
     /**

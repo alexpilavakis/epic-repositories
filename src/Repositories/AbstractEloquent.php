@@ -10,12 +10,8 @@ use Closure;
 
 abstract class AbstractEloquent implements RepositoryInterface
 {
-    /** @var */
     protected $model;
-
-    /** @var */
     protected $epic;
-
 
     /**
      * @param $model
@@ -35,10 +31,18 @@ abstract class AbstractEloquent implements RepositoryInterface
     }
 
     /**
-     ************
-     * Find *****
-     ** Single **
-     ************
+     * Flush all 'get' keys for this model instance along with any collections
+     *
+     * @param $model
+     */
+    public function flushGetKeys($model)
+    {
+    }
+
+    /**
+     *************
+     * Find Single
+     *************
      */
 
     /**
@@ -80,10 +84,9 @@ abstract class AbstractEloquent implements RepositoryInterface
     }
 
     /**
-     **********
-     * Find ***
-     ** Many **
-     **********
+     ***********
+     * Find Many
+     ***********
      */
 
     /**
@@ -104,11 +107,9 @@ abstract class AbstractEloquent implements RepositoryInterface
     }
 
     /**
-     *************
-     * Create ****
-     ** Update ***
-     *** Delete **
-     *************
+     ****************
+     * Create, Update, Delete
+     ****************
      */
 
     /**

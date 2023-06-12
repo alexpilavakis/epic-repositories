@@ -13,14 +13,52 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
      */
     protected function getKeyPrefix($key): string
     {
-        return "elastic:{$this->name}:{$key}";
+        return "elastic:$this->name:$key";
     }
 
     /**
-     ************
-     * Search ***
-     ************
+     * @return string
      */
+    protected function getCollectionPrefix()
+    {
+        return "elastic:$this->name:" . self::CACHE_TAG_COLLECTION;
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    protected function flushById($id): void
+    {
+        $this->flushFunction('get', [$id]);
+    }
+
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return void
+     */
+    protected function flushByAttribute($attribute, $value): void
+    {
+        $this->flushFunction('findBy', [$attribute, $value]);
+        $this->flushFunction('countBy', [$attribute, $value]);
+    }
+
+    /**
+     * Flush collection tags
+     */
+    protected function flushCollections()
+    {
+        $this->flushTag($this->getCollectionPrefix());
+    }
+
+    /**
+     *****************
+     * Search Functions
+     *****************
+     */
+
 
     /**
      * @param $function
@@ -36,10 +74,10 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     * @param array $params
+     * @param int $id
      * @return Hit
      */
-    public function get(array $params)
+    public function get(int $id)
     {
         return $this->remember(__FUNCTION__, func_get_args());
     }
@@ -83,9 +121,9 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     ************
-     * Index ***
-     ************
+     *****************
+     * Index Functions
+     *****************
      */
 
     /**

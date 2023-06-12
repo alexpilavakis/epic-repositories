@@ -78,7 +78,8 @@ return [
         'eloquent' => [
             'decorators' => ['caching'],
             'models' => [
-                'User' => App\Models\User::class
+                'User' => App\Models\User::class,
+                //'Model => App\Models\Model::class,
             ]
         ],
         /*'elastic' => [

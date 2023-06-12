@@ -8,14 +8,11 @@ use Ulex\EpicRepositories\Interfaces\EpicInterface;
 
 abstract class AbstractDecorator implements EpicInterface
 {
-    /** @var EpicInterface|null */
-    protected $epic;
+    protected ?EpicInterface $epic;
 
-    /** @var */
     protected $model;
 
-    /** @var string */
-    protected $name;
+    protected string $name;
 
     /**
      * EpicAbstract constructor.

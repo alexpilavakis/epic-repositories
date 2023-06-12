@@ -23,4 +23,13 @@ abstract class AbstractDatabase implements RepositoryInterface
     {
         return $this;
     }
+
+    /**
+     * Flush all 'get' keys for this model instance along with any collections
+     *
+     * @param $model
+     */
+    public function flushGetKeys($model)
+    {
+    }
 }

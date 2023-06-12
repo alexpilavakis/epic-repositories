@@ -9,17 +9,13 @@ use Closure;
 
 abstract class AbstractCachingDecorator extends AbstractDecorator
 {
-    /** @var Cache */
-    protected $cache;
+    protected Cache $cache;
 
-    /** @var int */
-    protected $ttl;
+    protected int $ttl;
 
-    /** @var bool */
-    protected $cacheForever = false;
+    protected bool $cacheForever = false;
 
-    /** @var bool */
-    protected $fromSource = false;
+    protected bool $fromSource = false;
 
     const CACHE_TAG_COLLECTION = 'collection';
 
@@ -37,11 +33,10 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     }
 
     /**
-     ********************
-     * Configurations ***
-     ** Caching & *******
-     *** Flushing * *****
-     ********************
+     *****************
+     * Configurations
+     * Caching & Flushing
+     *****************
      */
 
     /**
@@ -77,6 +72,31 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     abstract protected function getKeyPrefix($key);
 
     /**
+     * This will prefix the collection base on the CachingDecorator
+     *
+     * @return string
+     */
+    abstract protected function getCollectionPrefix();
+
+    /**
+     * @param $id
+     * @return void
+     */
+    abstract protected function flushById($id);
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return void
+     */
+    abstract protected function flushByAttribute($attribute, $value);
+
+    /**
+     * @return void
+     */
+    abstract protected function flushCollections();
+
+    /**
      * Flush all 'get' keys for this model instance along with any collections
      *
      * @param $model
@@ -84,8 +104,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     public function flushGetKeys($model)
     {
         if (isset($model->id)) {
-            $this->forget("find:{$model->id}");
-            $this->forget("findOrFail:{$model->id}");
+            $this->flushById($model->id);
         }
         $attributes = is_object($model) ? $model->getAttributes() : $model;
         $this->flushAttributes($attributes);
@@ -108,17 +127,8 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         unset($attributes['deleted_at']);
 
         foreach ($attributes as $attribute => $value) {
-            $this->flushFunction('findBy', [$attribute, $value]);
-            $this->flushFunction('checkIfExists', [$attribute, $value]);
+            $this->flushByAttribute($attribute, $value);
         }
-    }
-
-    /**
-     * Flush collection tags
-     */
-    protected function flushCollections()
-    {
-        $this->flushTag(self::CACHE_TAG_COLLECTION);
     }
 
     /**
@@ -173,6 +183,11 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         return sprintf('%s:%s', $function, implode(':', $arguments));
     }
 
+    /**
+     * @param $function
+     * @param $arguments
+     * @return string
+     */
     protected function advanceKey($function, $arguments)
     {
         /** Convert any objects to arrays */
@@ -192,7 +207,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     protected function createHashKey($function, $arguments)
     {
         $arguments = hash('sha1', (json_encode($arguments)));
-        return "{$function}:{$arguments}";
+        return "$function:$arguments";
     }
 
     /**
