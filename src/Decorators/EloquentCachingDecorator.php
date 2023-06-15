@@ -107,7 +107,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function all()
     {
-        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
+        return $this->remember(__FUNCTION__, func_get_args(), true);
     }
 
     /**
@@ -116,7 +116,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function findByConditions(array $conditions)
     {
-        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
+        return $this->remember(__FUNCTION__, func_get_args(), true);
     }
 
     /**
@@ -126,7 +126,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function findWhereIn(string $column, array $values)
     {
-        return $this->remember(__FUNCTION__, func_get_args(), [self::CACHE_TAG_COLLECTION]);
+        return $this->remember(__FUNCTION__, func_get_args(), true);
     }
 
     /**

@@ -46,14 +46,6 @@ abstract class ElasticCachingDecorator extends AbstractCachingDecorator
     }
 
     /**
-     * Flush collection tags
-     */
-    protected function flushCollections()
-    {
-        $this->flushTag($this->getCollectionPrefix());
-    }
-
-    /**
      *****************
      * Search Functions
      *****************
