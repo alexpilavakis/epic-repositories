@@ -2,6 +2,7 @@
 
 namespace Ulex\EpicRepositories\Repositories;
 
+use Illuminate\Database\Eloquent\Collection;
 use Ulex\EpicRepositories\Interfaces\RepositoryInterface;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
 use Illuminate\Support\Facades\DB;
@@ -106,6 +107,17 @@ abstract class AbstractEloquent implements RepositoryInterface
         return $this->model->where($conditions)->get();
     }
 
+
+    /**
+     * @param string $column
+     * @param array $values
+     * @return Collection
+     */
+    public function findWhereIn(string $column, array $values)
+    {
+        return $this->model->whereIn($column, $values)->get();
+    }
+
     /**
      ****************
      * Create, Update, Delete
@@ -184,6 +196,17 @@ abstract class AbstractEloquent implements RepositoryInterface
     public function updateByConditions(array $conditions, array $attributes)
     {
         return $this->model->where($conditions)->update($attributes);
+    }
+
+    /**
+     * @param string $column
+     * @param array $whereIn
+     * @param array $attributes
+     * @return bool
+     */
+    public function updateWhereIn(string $column, array $whereIn, array $attributes)
+    {
+        return $this->model->whereIn($column, $whereIn)->update($attributes);
     }
 
     /**
