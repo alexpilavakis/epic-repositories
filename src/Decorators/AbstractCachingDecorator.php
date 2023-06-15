@@ -72,7 +72,7 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     abstract protected function getKeyPrefix($key);
 
     /**
-     * This will prefix the collection base on the CachingDecorator
+     * This will prefix the collection based on the CachingDecorator
      *
      * @return string
      */
@@ -92,11 +92,6 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     abstract protected function flushByAttribute($attribute, $value);
 
     /**
-     * @return void
-     */
-    abstract protected function flushCollections();
-
-    /**
      * Flush all 'get' keys for this model instance along with any collections
      *
      * @param $model
@@ -110,7 +105,6 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         $this->flushAttributes($attributes);
         $this->flushCollections();
     }
-
 
     /**
      * @param array $attributes
@@ -129,6 +123,15 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         foreach ($attributes as $attribute => $value) {
             $this->flushByAttribute($attribute, $value);
         }
+    }
+
+
+    /**
+     * Flush collection tag
+     */
+    protected function flushCollections()
+    {
+        $this->flushTag($this->getCollectionPrefix());
     }
 
     /**
@@ -228,10 +231,10 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
     /**
      * @param string $function
      * @param $arguments
-     * @param array|null $tags
+     * @param bool $isCollection
      * @return array|mixed
      */
-    protected function remember(string $function, $arguments, array $tags = null)
+    protected function remember(string $function, $arguments, bool $isCollection = false)
     {
         $closure = $this->closure($function, $arguments);
         if ($this->fromSource) {
@@ -242,8 +245,8 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         if ($this->cacheForever) {
             return $this->cache->rememberForever($this->getKeyPrefix($key), $closure);
         }
-        if (!empty($tags)) {
-            return $this->cache->tags($tags)->remember($this->getKeyPrefix($key), $this->ttl, $closure);
+        if ($isCollection) {
+            return $this->cache->tags($this->getCollectionPrefix())->remember($this->getKeyPrefix($key), $this->ttl, $closure);
         }
         return $this->cache->remember($this->getKeyPrefix($key), $this->ttl, $closure);
     }
