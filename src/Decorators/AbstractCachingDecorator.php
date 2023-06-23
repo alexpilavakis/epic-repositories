@@ -2,14 +2,17 @@
 
 namespace Ulex\EpicRepositories\Decorators;
 
+use Closure;
+use Illuminate\Contracts\Cache\Repository as Cache;
 use ReflectionException;
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
-use Illuminate\Contracts\Cache\Repository as Cache;
-use Closure;
 
 abstract class AbstractCachingDecorator extends AbstractDecorator
 {
-    protected Cache $cache;
+    /**
+     * @var Cache
+     */
+    protected $cache;
 
     protected int $ttl;
 
