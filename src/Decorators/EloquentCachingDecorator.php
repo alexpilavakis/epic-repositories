@@ -245,7 +245,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function deleteByConditions(array $conditions)
     {
-        $models = $this->findByConditions($conditions);
+        $models = $this->getEpic()->findByConditions($conditions);
         foreach ($models as $model) {
             $this->delete($model);
         }
