@@ -246,6 +246,9 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         }
         $key = $this->key($function, $arguments);
         if ($this->cacheForever) {
+            if ($isCollection) {
+                return $this->cache->tags($this->getCollectionPrefix())->rememberForever($this->getKeyPrefix($key), $closure);
+            }
             return $this->cache->rememberForever($this->getKeyPrefix($key), $closure);
         }
         if ($isCollection) {
