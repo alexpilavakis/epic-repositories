@@ -149,6 +149,7 @@ abstract class AbstractEloquent implements RepositoryInterface
      * ];
      *
      * @param array $attributes
+     * @return int
      */
     public function createMany(array $attributes)
     {
@@ -156,7 +157,7 @@ abstract class AbstractEloquent implements RepositoryInterface
             $date = Carbon::now();
             $attributes = array_map($this->mapValues($date), $attributes);
         }
-        DB::table($this->model->getTable())->insertOrIgnore($attributes);
+        return DB::table($this->model->getTable())->insertOrIgnore($attributes);
     }
 
     /**
@@ -211,10 +212,11 @@ abstract class AbstractEloquent implements RepositoryInterface
 
     /**
      * @param $model
+     * @return mixed
      */
     public function delete($model)
     {
-        $model->delete();
+        return $model->delete();
     }
 
     /**

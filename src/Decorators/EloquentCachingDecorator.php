@@ -148,11 +148,13 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 
     /**
      * @param array $attributes
+     * @return mixed
      */
     public function createMany(array $attributes)
     {
-        $this->getEpic()->createMany($attributes);
+        $result = $this->getEpic()->createMany($attributes);
         $this->flushCollections();
+        return $result;
     }
 
     /**
