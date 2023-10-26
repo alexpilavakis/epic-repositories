@@ -17,7 +17,7 @@ class RepositoriesServiceProvider extends ServiceProvider implements DeferrableP
      */
     public function boot() {
         if (function_exists('config_path')) { // function not available and 'publish' not relevant in Lumen
-            $this->publishes([__DIR__ . '/../config/epic-repositories.php' => config_path('epic-repositories.php')], 'config');
+            $this->publishes([__DIR__ . '/../config/epic-repositories.php' => config_path('epic-repositories.php')], 'epic-repositories-config');
         }
         if ($this->app->runningInConsole()) {
             $this->commands([
