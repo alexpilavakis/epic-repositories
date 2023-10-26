@@ -44,10 +44,13 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
         $this->flushFunction('checkIfExists', [$attribute, $value]);
     }
 
+
     /**
      * Flush collection tags
+     *
+     * @return void
      */
-    protected function flushCollections()
+    public function flushCollections()
     {
         $this->flushTag($this->getCollectionPrefix());
     }
@@ -187,8 +190,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function update($model, $attributes)
     {
-        $repository = $this->getEpic();
-        $result = $repository->update($model, $attributes);
+        $result = $this->getEpic()->update($model, $attributes);
         if ($result) {
             $this->flushGetKeys($model);
         }
@@ -208,6 +210,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
             foreach ($models as $model) {
                 $this->flushGetKeys($model);
             }
+            $this->flushCollections();
         }
         return $result;
     }
@@ -226,6 +229,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
             foreach ($models as $model) {
                 $this->flushGetKeys($model);
             }
+            $this->flushCollections();
         }
         return $result;
     }
