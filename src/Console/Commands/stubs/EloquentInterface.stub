@@ -3,15 +3,23 @@
 namespace DummyNamespace;
 
 use Ulex\EpicRepositories\Interfaces\EpicInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 interface DummyClass extends EpicInterface
 {
     /**
       * Flush all 'get' keys for this model instance along with any collections
       *
-      * @param $model
+      * @param Dummy $model
       */
      public function flushGetKeys($model);
+
+     /**
+      * Flush collection tags
+      *
+      * @return void
+      */
+     public function flushCollections();
 
     /**
      * @return $this
@@ -20,37 +28,37 @@ interface DummyClass extends EpicInterface
 
      /**
      * @param $id
-     * @return mixed
+     * @return Dummy
      */
     public function find($id);
 
     /**
      * @param $id
-     * @return mixed
+     * @return Dummy
      */
     public function findOrFail($id);
 
     /**
      * @param $attribute
      * @param $value
-     * @return mixed
+     * @return Dummy
      */
     public function findBy($attribute, $value);
 
     /**
-     * @return mixed
+     * @return Collection
      */
     public function all();
 
     /**
      * @param array $conditions
-     * @return mixed
+     * @return Collection
      */
     public function findByConditions(array $conditions);
 
     /**
      * @param $attributes
-     * @return mixed
+     * @return Dummy
      */
     public function create($attributes);
 
@@ -62,21 +70,21 @@ interface DummyClass extends EpicInterface
 
     /**
      * @param $attributes
-     * @return mixed
+     * @return Dummy
      */
     public function firstOrCreate($attributes);
 
     /**
      * @param array $attributes
      * @param array $values
-     * @return mixed
+     * @return Dummy
      */
     public function updateOrCreate(array $attributes, array $values = []);
 
     /**
      * @param $model
      * @param $attributes
-     * @return mixed
+     * @return int
      */
     public function update($model, $attributes);
 

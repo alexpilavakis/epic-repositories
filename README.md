@@ -13,7 +13,7 @@ composer require ulex/epic-repositories
 
 You should publish the RepositoriesServiceProvider:
 ```php
-php artisan vendor:publish --provider="Ulex\EpicRepositories\RepositoriesServiceProvider" --tag=config
+php artisan vendor:publish --provider="Ulex\EpicRepositories\RepositoriesServiceProvider" --tag=epic-repositories-config
 ```
 
 Optional: The service provider will automatically get registered. Or you may manually add the service provider in your config/app.php file:
