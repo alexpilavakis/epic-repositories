@@ -59,8 +59,12 @@ abstract class AbstractElastic implements RepositoryInterface
     {
         $result = new Result();
         $result->setTotal($params['hits']['total']['value'] ?? null);
-
-        $hits = isset($params['hits']['hits']) ? array_column($params['hits']['hits'], '_source') : [];
+        $resultArray = $params['hits']['hits'] ?? [];
+        $hits = [];
+        foreach ($resultArray as $item) {
+            $item['_source']['_id'] = $item['_id'];
+            $hits[] = $item['_source'];
+        }
         $result->setHits($hits);
         $result->setAggregations($params['aggregations'] ?? []);
         return $result;
