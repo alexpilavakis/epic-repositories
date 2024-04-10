@@ -41,7 +41,6 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
     protected function flushByAttribute($attribute, $value): void
     {
         $this->flushFunction('findBy', [$attribute, $value]);
-        $this->flushFunction('checkIfExists', [$attribute, $value]);
     }
 
 
@@ -96,7 +95,7 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
      */
     public function checkIfExists($attribute, $value)
     {
-        return $this->remember(__FUNCTION__, func_get_args());
+        return $this->remember(__FUNCTION__, func_get_args(), true);
     }
 
     /**
