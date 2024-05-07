@@ -128,11 +128,12 @@ abstract class AbstractCachingDecorator extends AbstractDecorator
         }
     }
 
-
     /**
-     * Flush collection tag
+     * Flush collection tags
+     *
+     * @return void
      */
-    protected function flushCollections()
+    public function flushCollections()
     {
         $this->flushTag($this->getCollectionPrefix());
     }
