@@ -41,6 +41,13 @@ abstract class AbstractEloquent implements RepositoryInterface
     }
 
     /**
+     * Flush collection tag
+     */
+    public function flushCollections()
+    {
+    }
+
+    /**
      *************
      * Find Single
      *************

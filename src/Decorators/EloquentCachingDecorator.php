@@ -45,16 +45,6 @@ abstract class EloquentCachingDecorator extends AbstractCachingDecorator
 
 
     /**
-     * Flush collection tags
-     *
-     * @return void
-     */
-    public function flushCollections()
-    {
-        $this->flushTag($this->getCollectionPrefix());
-    }
-
-    /**
      ************
      * Find Single
      ************
