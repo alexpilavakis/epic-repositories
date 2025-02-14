@@ -154,4 +154,4 @@ when using the repository design pattern on [Laravel From Scratch](https://larac
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
